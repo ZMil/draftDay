@@ -1,0 +1,21 @@
+{
+  "name": "draftday",
+  "description": "Draft day for Pokemon Showdown",
+  "main": "index.js",
+  "authors": [
+    "Zach Milrod"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}

@@ -1,0 +1,143 @@
+#pokemon{
+	text-align: center;
+	background-color: white;
+}
+
+div{
+	ul{
+		li{
+			list-style-type: none;
+			display: inline-block;
+			
+		}
+	}
+}
+
+.pokemonName{
+	font-weight: bold;
+	font-size: 200%;
+}
+
+.teamPokemon{
+	list-style-type: none;
+	display: inline-block;
+	padding-right: 10%;
+	div{
+		font-size: 150%;
+	}
+}
+
+h1{
+	text-align: center;
+}
+
+.headerSideText{
+	font-size: 150%;
+}
+
+.headerMiddleText{
+	font-size: 160%;
+}
+
+nav{
+	padding-top: 2%;
+	padding-bottom: 2%;
+}
+
+.roundText{
+	font-size: 250%;
+}
+
+.middleText{
+	position: relative;
+}
+
+.navbar-inverse {
+    background-color: rgba(34,34,34,.875);
+    border-color: #080808;
+}
+
+.gen{
+	padding-right: 2.5%;
+}
+
+.Bird 	{
+	background-color: rgba(216, 180, 247 , .75);
+}
+.Normal{
+	background-color: rgba(205, 206, 204  , .75);
+}
+.Grass {
+	background-color: rgba(138, 252, 117, .75);
+}
+.Poison{
+	background-color: rgba(126, 90, 140, .75);
+}
+.Fire 	{
+	background-color: rgba(246,84,106,.75); 	
+}
+.Flying{
+	background-color: rgba(216, 180, 247 , .75);
+}
+.Water {
+	background-color: rgba(0, 254, 246, .75);
+}
+.Bug 		{
+	background-color: rgba(154, 254, 0  , .75);
+}
+.Electric{
+	background-color: rgba(254, 250, 0  , .75);
+}
+.Ground{
+	background-color: rgba(255, 147, 0  , .75);
+}
+.Fairy {
+	background-color: rgba(255, 0, 189  , .75);
+}
+.Fighting{
+	background-color: rgba(255, 201, 0  , .75);
+}
+.Psychic{
+	background-color:  rgba(197, 0, 255 , .75);
+}
+.Rock 	{
+	background-color: rgba(146, 129, 151  , .75);
+}
+.Steel {
+	background-color: rgba(236, 235, 236  , .75);
+}
+.Ice 		{
+	background-color: rgba(199, 245, 252  , .75);
+}
+.Ghost {
+	background-color: rgba(165, 119, 255  , .75);
+}
+.Dark 	{
+	background-color: rgba(87, 84, 93  , .75);
+}
+.Dragon{
+	background-color: rgba(70, 204, 250  , .75);
+}
+
+.btn:focus, .btn:active {
+  outline: none;
+  /*background-color: none;*/
+}
+
+.textCenter{
+	float: inherit !important;
+}
+
+.textCenter1{
+	float: none !important;
+}
+
+.textInputName{
+	/*font-size: 105%;*/
+}
+
+input{
+	text-align: center;
+}
+
+// sass --update style.scss:style.css
