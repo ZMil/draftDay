@@ -225,7 +225,6 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
 
 	pokemans.push(pokemonArrayCopy[parseInt(random)]);
 	pokemansNamesAndImages.push({name: pokemans[i].species, image: 'https://img.pokemondb.net/artwork/'+pokemans[i].species.toLowerCase()+'.jpg'});
-  }
 
   res.send(pokemansNamesAndImages);
 });
