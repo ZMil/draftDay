@@ -212,20 +212,19 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
 
 
   
-  for(var i = 0; i < teams*6; i++){
-  	var random = Math.random()*(Object.keys(pokemonArrayCopy).length -1 );
-  	var currPoke = pokemonArrayCopy[parseInt(random)];
-  	
-  	  	while(pokemans.indexOf(currPoke) != -1 ){
-  		  	random = Math.random()*(Object.keys(pokemonArrayCopy).length);
-  		  	currPoke = pokemonArrayCopy[parseInt(random)];
+ for(var j = 0; j < teams*6; j++){
+    var random = Math.random()*(Object.keys(pokemonArrayCopy).length -1 );
+    var currPoke = pokemonArrayCopy[parseInt(random)];
+    
+        while(pokemans.indexOf(currPoke) != -1 ){
+          random = Math.random()*(Object.keys(pokemonArrayCopy).length);
+          currPoke = pokemonArrayCopy[parseInt(random)];
         }
-		
-	}
-
-	pokemans.push(pokemonArrayCopy[parseInt(random)]);
-	pokemansNamesAndImages.push({name: pokemans[i].species, image: 'https://img.pokemondb.net/artwork/'+pokemans[i].species.toLowerCase()+'.jpg'});
-
+        pokemans.push(pokemonArrayCopy[parseInt(random)]);
+        species = pokemans[j].species;
+        pokemansNamesAndImages.push({name: species, image: 'https://img.pokemondb.net/artwork/'+species.toLowerCase()+'.jpg'});
+  }
+  
   res.send(pokemansNamesAndImages);
 });
 
