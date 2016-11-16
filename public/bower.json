@@ -1,12 +1,12 @@
 {
-  "name": "draftday",
-  "description": "Draft day for Pokemon Showdown",
+  "name": "draftDay",
   "main": "index.js",
+  "homepage": "https://github.com/ZMil/draftDay",
   "authors": [
-    "Zach Milrod"
+    "Zachary Milrod <zmilrod@gmail.com>"
   ],
-  "license": "ISC",
-  "homepage": "",
+  "description": "",
+  "license": "MIT",
   "private": true,
   "ignore": [
     "**/.*",
@@ -16,6 +16,12 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "^3.3.7"
+    "bootstrap-toggle": "^2.2.2",
+    "bootstrap": "^3.3.7",
+    "ajax": "^2.1.2",
+    "babel": "^5.8.38",
+    "fetch": "^1.0.0",
+    "react": "^15.3.2",
+    "react-bootstrap": "^0.30.5"
   }
 }
