@@ -2,8 +2,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);    
     this.state = {gender: 'Hello!', data: [], numberOfTeams: 2, 
-    			  images:[], show: false, currentPlayer: 1, teams: [], 
-    			  showResults: [], displayTeam: [], round: 1, ready: false,
+    			  images:[], show: false, currentPlayer: 1, nextPlayer: 2, lastPlayer: 0,
+    			  teams: [], showResults: [], displayTeam: [], round: 1, ready: false,
     		      tier: "Tiers", finalFormOnly: false, 
     		      gen1: true, 
     		      gen2:true, 
@@ -226,27 +226,44 @@ class App extends React.Component {
   	this.setState({showResults: this.state.showResults})
 
   	if(this.state.linearDraft){
+  		{this.state.lastPlayer = this.state.currentPlayer}
+		this.setState({lastPlayer: this.state.lastPlayer})
 	  	{this.state.currentPlayer += 1}  
 		if(this.state.currentPlayer > this.state.numberOfTeams){
 			{this.state.currentPlayer = 1}
+			{this.state.round += 1}
+			this.setState({round: this.state.round});
 		}
+		{this.state.nextPlayer = this.state.currentPlayer == this.state.numberOfTeams ? 1 : this.state.currentPlayer+1}
+		this.setState({nextPlayer: this.state.nextPlayer})
 	} else{
 		//is snake draft
+		{this.state.lastPlayer = this.state.currentPlayer}
+		this.setState({lastPlayer: this.state.lastPlayer});
 		if(this.state.currentPlayer == this.state.numberOfTeams || (this.state.currentPlayer == 1 && this.state.round > 1)) {
 			if(this.state.turnOfEdgePlayer > 0){
 				var reverse = -(this.state.directionOfSnakeDraft);
 				var nextPlayer = this.state.currentPlayer + reverse;
-				this.setState({turnOfEdgePlayer: 0, directionOfSnakeDraft: reverse, currentPlayer: nextPlayer});
+				var nextNextPlayer = this.state.numberOfTeams > 2 ? this.state.currentPlayer + (2*reverse) : this.state.currentPlayer + reverse;
+				this.setState({turnOfEdgePlayer: 0, directionOfSnakeDraft: reverse, currentPlayer: nextPlayer, nextPlayer: nextNextPlayer});
 			} else{
-				this.setState({turnOfEdgePlayer: 1});
+				this.setState({turnOfEdgePlayer: 1}); 
+				var nextPlayer = this.state.currentPlayer + -(this.state.directionOfSnakeDraft);
+				this.setState({nextPlayer: nextPlayer});
+				{this.state.round += 1}
+				this.setState({round: this.state.round});
 			}
 		} else{
 			var nextPlayer = this.state.currentPlayer + this.state.directionOfSnakeDraft;
 			this.setState({currentPlayer: nextPlayer});
+			if(nextPlayer == this.state.numberOfTeams || nextPlayer == 1 ){
+
+			} else{
+				nextPlayer += this.state.directionOfSnakeDraft;
+				this.setState({nextPlayer: nextPlayer});
+			}
 		}
 	}
-	{this.state.round += 1}
-	this.setState({round: this.state.round});
 	this.setState({ready: true});
   	var moreThanOnePokemonLeft = false;
   	for(var i = 0; i < this.state.showResults.length; i++){
@@ -563,15 +580,11 @@ class App extends React.Component {
 									<span>
 									<br></br>
 									<div className="text-left headerSideText text-muted"><b>Previous Pick:</b></div>
-									<div className="text-left headerSideText text-danger"><b>Player {this.state.currentPlayer == 1 ? this.state.numberOfTeams : this.state.currentPlayer - 1}</b></div>
+									<div className="text-left headerSideText text-danger"><b>Player {this.state.lastPlayer}</b></div>
 									<div className="text-left headerSideText text-success"><b>
-										{this.state.round > 1 
-											? this.state.currentPlayer == 1 
-												? this.state.teams[this.state.numberOfTeams-1][this.state.round - 2] 
-												: this.state.teams[this.state.currentPlayer - 2][this.state.round - 1]
-										: null}
+										{this.state.teams[this.state.lastPlayer-1][this.state.lastPlayer == this.state.currentPlayer ? this.state.round - 2 : this.state.round-1]}
 										</b></div> 						</span>
-										: null}
+							: null}
 							</li>
 							
 							<li className="text-primary col-md-4 middleText" >
@@ -586,12 +599,9 @@ class App extends React.Component {
 							{ this.state.ready ? 
 								<span>
 								<br></br>
-								<div className="text-right headerSideText text-danger"><b>Player {this.state.currentPlayer == this.state.numberOfTeams ? 1 : this.state.currentPlayer + 1}</b></div>
+								<div className="text-right headerSideText text-danger"><b>Player {this.state.nextPlayer}</b></div>
 								<div className="text-right headerSideText text-muted"><b>Is Up Next</b></div>
-								{this.state.round > 1 ? <div className="text-right headerSideText text-success"><b>Last Picked: {this.state.currentPlayer == this.state.numberOfTeams ?
-																											this.state.teams[0][this.state.round - 1] 
-																											: this.state.teams[this.state.currentPlayer][this.state.round - 2]
-																										}
+								{this.state.round > 1 ? <div className="text-right headerSideText text-success"><b>Last Picked: {this.state.teams[this.state.nextPlayer-1][this.state.round - 2]}
 																										</b></div>
 									:null}
 								</span>
