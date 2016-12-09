@@ -32,7 +32,11 @@ class App extends React.Component {
 			   	  Ghost: true,
 			   	  Dark: true,
 			   	  Dragon: true, 
-			   	  draftOver: false}; 
+			   	  draftOver: false,
+			   	  snakeDraft: true,
+			   	  linearDraft: false,
+			   	  turnOfEdgePlayer: 0, 
+			   	  directionOfSnakeDraft: 1}; 
     this.handleChange = this.handleChange.bind(this);
     this.getResults = this.getResults.bind(this);
     this.handleTeamChange = this.handleTeamChange.bind(this);
@@ -47,6 +51,12 @@ class App extends React.Component {
     this.unselectAll = this.unselectAll.bind(this);
     this.selectAll = this.selectAll.bind(this);
     this.restart = this.restart.bind(this);
+    this.draftChange = this.draftChange.bind(this);
+  }
+
+  draftChange(event){
+  	var s = !this.state.snakeDraft;
+  	this.setState({snakeDraft: s, linearDraft: !s});
   }
 
   unselectAll(event) {
@@ -215,13 +225,29 @@ class App extends React.Component {
   	{this.state.showResults[number] = false}
   	this.setState({showResults: this.state.showResults})
 
-  	{this.state.currentPlayer += 1}
-  	if(this.state.currentPlayer > this.state.numberOfTeams){
-  		{this.state.currentPlayer = 1}
-  		{this.state.round += 1}
-  		this.setState({round: this.state.round});
-  	}
-  	this.setState({ready: true});
+  	if(this.state.linearDraft){
+	  	{this.state.currentPlayer += 1}  
+		if(this.state.currentPlayer > this.state.numberOfTeams){
+			{this.state.currentPlayer = 1}
+		}
+	} else{
+		//is snake draft
+		if(this.state.currentPlayer == this.state.numberOfTeams || (this.state.currentPlayer == 1 && this.state.round > 1)) {
+			if(this.state.turnOfEdgePlayer > 0){
+				var reverse = -(this.state.directionOfSnakeDraft);
+				var nextPlayer = this.state.currentPlayer + reverse;
+				this.setState({turnOfEdgePlayer: 0, directionOfSnakeDraft: reverse, currentPlayer: nextPlayer});
+			} else{
+				this.setState({turnOfEdgePlayer: 1});
+			}
+		} else{
+			var nextPlayer = this.state.currentPlayer + this.state.directionOfSnakeDraft;
+			this.setState({currentPlayer: nextPlayer});
+		}
+	}
+	{this.state.round += 1}
+	this.setState({round: this.state.round});
+	this.setState({ready: true});
   	var moreThanOnePokemonLeft = false;
   	for(var i = 0; i < this.state.showResults.length; i++){
   		if(this.state.showResults[i] == true){
@@ -378,6 +404,9 @@ class App extends React.Component {
 		      <div onChange={this.handleTeamChange}>
 		      	<TextInput text="Number of Teams:" type="number" placeholder="Default is 2 Teams"/>
 		      </div>
+		      <div onClick={this.draftChange}>
+		      	<DraftTypeInput name1="Snake Draft" name2="Linear Draft" value={this.state.snakeDraft}/>
+		      </div>	
 			
 			<br></br>
 
@@ -536,9 +565,11 @@ class App extends React.Component {
 									<div className="text-left headerSideText text-muted"><b>Previous Pick:</b></div>
 									<div className="text-left headerSideText text-danger"><b>Player {this.state.currentPlayer == 1 ? this.state.numberOfTeams : this.state.currentPlayer - 1}</b></div>
 									<div className="text-left headerSideText text-success"><b>
-										{this.state.currentPlayer == 1 
-											? this.state.teams[this.state.numberOfTeams-1][this.state.round - 2] 
-											: this.state.teams[this.state.currentPlayer - 2][this.state.round - 1]}
+										{this.state.round > 1 
+											? this.state.currentPlayer == 1 
+												? this.state.teams[this.state.numberOfTeams-1][this.state.round - 2] 
+												: this.state.teams[this.state.currentPlayer - 2][this.state.round - 1]
+										: null}
 										</b></div> 						</span>
 										: null}
 							</li>
@@ -557,6 +588,12 @@ class App extends React.Component {
 								<br></br>
 								<div className="text-right headerSideText text-danger"><b>Player {this.state.currentPlayer == this.state.numberOfTeams ? 1 : this.state.currentPlayer + 1}</b></div>
 								<div className="text-right headerSideText text-muted"><b>Is Up Next</b></div>
+								{this.state.round > 1 ? <div className="text-right headerSideText text-success"><b>Last Picked: {this.state.currentPlayer == this.state.numberOfTeams ?
+																											this.state.teams[0][this.state.round - 1] 
+																											: this.state.teams[this.state.currentPlayer][this.state.round - 2]
+																										}
+																										</b></div>
+									:null}
 								</span>
 								:null}
 							</li>
@@ -664,6 +701,23 @@ class GenInput extends React.Component {
 		return (
 			<span>
 				<input className="toggleInput" type="checkbox" data-toggle="toggle" data-on={this.props.name} data-off={this.props.name} value={this.props.value} defaultChecked/>
+			</span>
+		);
+	}
+}
+
+class DraftTypeInput extends React.Component {
+	componentDidMount(){
+  		$('.toggleInput').bootstrapToggle('on');
+	}
+	componentDidUpdate(){
+	    $('.toggleInput').bootstrapToggle();
+	}
+
+	render(){
+		return (
+			<span>
+				<input className="toggleInput" type="checkbox" data-toggle="toggle" data-on={this.props.name1} data-off={this.props.name2} value={this.props.value} defaultChecked/>
 			</span>
 		);
 	}
