@@ -222,7 +222,6 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
         species = pokemans[j].species;
         pokemansNamesAndImages.push({name: species, image: 'https://img.pokemondb.net/artwork/'+species.toLowerCase()+'.jpg'});
 	}
-
   res.send(pokemansNamesAndImages);
 });
 
