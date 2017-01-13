@@ -1,6 +1,49 @@
+var socket = io();
+var pokemans = [];
 class App extends React.Component {
+
+componentDidMount() {
+
+    socket.on('broadcast pick', (selection) => {
+    	console.log(selection);
+    	if(this.state.teamResults.length - 1 < selection.team){
+    		this.state.teamResults.push([selection.pokemon]);
+    	} else {
+    		this.state.teamResults[selection.team].push(selection.pokemon);
+    	}
+    	console.log(this.state.showResults);
+    	this.state.showResults[selection.pokemonNum] = false;
+    	var results = this.state.showResults;
+    	this.setState({showResults: results});
+    });
+
+    socket.on('flock', (j) => {
+    	console.log(j);
+    	var data1 = j;
+    	pokemans = j;
+    	this.setState({data: data1});
+    	console.log(this.state.data);
+    	var showResultsTemp = [];
+		for(var i = 0; i < j.length; i++){
+			showResultsTemp.push(true);
+		}
+		this.setState({show: true});
+		this.setState({showResults: showResultsTemp});
+    });
+
+    socket.on('teamNumberChange', (teams) => {
+    	this.setState({numberOfTeams: teams});
+    });
+
+    socket.on('player number', (number) => {
+    	console.log(number);
+    	this.setState({clientNumber: number});
+    });
+
+}
+
   constructor(props) {
-    super(props);    
+    super(props);   
     this.state = {gender: 'Hello!', data: [], numberOfTeams: 2, 
     			  images:[], show: false, currentPlayer: 1, nextPlayer: 2, lastPlayer: 0,
     			  teams: [], showResults: [], displayTeam: [], round: 1, ready: false,
@@ -36,7 +79,10 @@ class App extends React.Component {
 			   	  snakeDraft: true,
 			   	  linearDraft: false,
 			   	  turnOfEdgePlayer: 0, 
-			   	  directionOfSnakeDraft: 1}; 
+			   	  directionOfSnakeDraft: 1, 
+			   	  serverValue: 'adfsf',
+			   	  teamResults: [],
+			   	  clientNumber: -1}; 
     this.handleChange = this.handleChange.bind(this);
     this.getResults = this.getResults.bind(this);
     this.handleTeamChange = this.handleTeamChange.bind(this);
@@ -52,6 +98,11 @@ class App extends React.Component {
     this.selectAll = this.selectAll.bind(this);
     this.restart = this.restart.bind(this);
     this.draftChange = this.draftChange.bind(this);
+    this.onUpdateLabel = this.onUpdateLabel.bind(this);
+  }
+
+  onUpdateLabel(data){
+	this.setState({serverValue: data});
   }
 
   draftChange(event){
@@ -215,6 +266,9 @@ class App extends React.Component {
   selectPokemon(event) {
   	var name = event.name;
   	var number = event.key;
+  	socket.emit('selection made', {team: this.state.currentPlayer-1, 
+  								   pokemon: event.name,
+  								   pokemonNum: event.key});
 
   	if(this.state.teams.length < this.state.currentPlayer){
   		this.state.teams.push([name]);
@@ -223,11 +277,12 @@ class App extends React.Component {
   	}
   	//make pokemon disappear
   	{this.state.showResults[number] = false}
-  	this.setState({showResults: this.state.showResults})
+  	var results = this.state.showResults;
+  	this.setState({showResults: results});
 
   	if(this.state.linearDraft){
   		{this.state.lastPlayer = this.state.currentPlayer}
-		this.setState({lastPlayer: this.state.lastPlayer})
+		this.setState({lastPlayer: this.state.lastPlayer});
 	  	{this.state.currentPlayer += 1}  
 		if(this.state.currentPlayer > this.state.numberOfTeams){
 			{this.state.currentPlayer = 1}
@@ -326,6 +381,9 @@ class App extends React.Component {
   }
 
   getResults() {
+  	if(pokemans != []){
+  		console.log(pokemans);
+  	}
   	var genArray = [this.state.gen1,
   					this.state.gen2,
   					this.state.gen3,
@@ -390,7 +448,7 @@ class App extends React.Component {
 		}
 		
 		this.setState({data: j});
-		
+		socket.emit('start', j);
 		this.setState({show: true});
 		this.setState({showResults: showResultsTemp});
     }.bind(this))
@@ -403,7 +461,6 @@ class App extends React.Component {
   	console.log("Button Pressed: ", event);
   }
 
-  
   render() {
     return ( 
     	<div>
@@ -418,9 +475,17 @@ class App extends React.Component {
 				sum base stats and base stat level **DONE**
 				*/}   
 
-		      <div onChange={this.handleTeamChange}>
-		      	<TextInput text="Number of Teams:" type="number" placeholder="Default is 2 Teams"/>
-		      </div>
+		      {
+		      	// <div onChange={this.handleTeamChange}>
+  		     //  		<TextInput text="Number of Teams:" type="number" placeholder="Default is 2 Teams"/>
+  	   	  //       </div>
+		      }
+		      <h3>
+				Number of Players Connected:	 
+			  </h3> 
+			  <h4>
+			  {this.state.numberOfTeams}
+			  </h4>
 		      <div onClick={this.draftChange}>
 		      	<DraftTypeInput name1="Snake Draft" name2="Linear Draft" value={this.state.snakeDraft}/>
 		      </div>	
@@ -572,6 +637,12 @@ class App extends React.Component {
 			    </div>
 		      : null}
 
+		      <Navbar inverse className="navbar-dark text-primary text-center navbar-fixed-top">
+		      <b>YOU ARE PLAYER {this.state.clientNumber+1}</b>
+		      <br></br>
+		      {this.state.currentPlayer == this.state.clientNumber+1 ? <b>IT IS YOUR TURN</b> : null}
+		      </Navbar>
+
 		      { this.state.show ? 
 					<Navbar inverse className="navbar-dark navbar-fixed-bottom">
 						<ul className="nav nav-pills nav-justified">
@@ -616,9 +687,9 @@ class App extends React.Component {
 						return(
 							<li className="teamPokemon">
 								<h3>Team {key+1}</h3>
-									{team.map((pokemon, key1) => {
+								{team.map((pokemon, key1) => {
 										return (
-											<span>  
+											<span key={key1}>  
 												<div>{pokemon}</div>
 												{!this.state.show ? <br></br> : null}
 											</span>
@@ -734,13 +805,16 @@ class DraftTypeInput extends React.Component {
 }
 
 class TextInput extends React.Component {
+	_notifyServer(event){
+       socket.emit('number of team change', { value: event.target.value });
+    }
 	render(){
 		return (
 			<div>
 				<h3 className="textInputName">
 				 {this.props.text} 
 				</h3> 
-				<input type={this.props.type} placeholder={this.props.placeholder}/>				
+				<input onChange={this._notifyServer} type={this.props.type} placeholder={this.props.placeholder}/>				
 			</div>
 		);
 	}
@@ -761,7 +835,15 @@ class Pokemon extends React.Component {
 	}
 }
 
-ReactDOM.render(
+class SocketBanner extends React.Component {
+	render(){
+		return(
+			<h>{this.props.value}</h>
+		);
+	}
+}
+
+var output = ReactDOM.render(
 	<App/>, 
 	document.getElementById('app')
 );

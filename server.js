@@ -2,9 +2,12 @@ var util = require('util');
 var http = require('http');
 var express = require('express');
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
 
 //some variables
-var port = process.env.PORT || process.env.port || process.env.OPENSHIFT_NODEJS_PORT || 8080;
+var port = process.env.PORT || process.env.port || process.env.OPENSHIFT_NODEJS_PORT || 9999;
 var ip = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 var nodeEnv = process.env.NODE_ENV || 'unknown';
 
@@ -12,9 +15,11 @@ var nodeEnv = process.env.NODE_ENV || 'unknown';
 app.use(express.static(__dirname + '/public'));
 
 //start up server
-app.listen(port, ip, function() {
-	console.log('Server listening on ' + port);
-});
+// app.listen(port, ip, function() {
+	// console.log('Server listening on ' + port);
+// });
+console.log('Server listening on ' + port);
+server.listen(port);
 
 var gen1 = [1, 151];
 var gen2 = [152, 251];
@@ -53,6 +58,51 @@ for(pokemon in battlePokedex){
 	pokemonArray[battlePokedex[pokemon].num] = battlePokedex[pokemon];
 }
 
+var playerDictionary = {};
+var openNumbers = [];
+
+// TODO:
+// Sync round/who is picking/up next/etc.
+// Sync always updating teams
+// Only team that is up may choose a pokemon
+// Sync preferences before draft
+
+io.on('connection', function(socket){
+
+  if(playerDictionary[socket.id] == undefined){
+    if(openNumbers.length != 0){
+      playerDictionary[socket.id] = openNumbers.shift();
+    } 
+    else{
+      playerDictionary[socket.id] = Object.keys(playerDictionary).length;
+    }
+    console.log(socket.id+"has connected as player "+playerDictionary[socket.id]);  
+  } else {
+    console.log(socket.id+"has RECONNECTED as player "+playerDictionary[socket.id]);
+  }
+
+  io.to(socket.id).emit('player number', playerDictionary[socket.id]);
+  io.emit('teamNumberChange', Object.keys(playerDictionary).length);
+
+  socket.on('selection made', function(selection){
+    console.log(selection);
+    io.emit('broadcast pick', selection);
+  });
+
+  socket.on('start', function(flock){
+    io.emit('flock', flock);
+  });
+
+  socket.on('number of team change', function(teams){
+    
+  });
+
+  socket.on('disconnect', function(){
+    console.log(socket.id+'has disconnected as '+playerDictionary[socket.id]);
+    openNumbers.push(playerDictionary[socket.id]);
+    delete playerDictionary[socket.id];
+  });
+});
 
 
 app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr', function(req, res) {
@@ -223,6 +273,7 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
         pokemansNamesAndImages.push({name: species, image: 'https://img.pokemondb.net/artwork/'+species.toLowerCase()+'.jpg'});
 	}
   res.send(pokemansNamesAndImages);
+  io.emit('pokemon incoming', pokemansNamesAndImages);
 });
 
 function FitsInGenBounds(pokemonNum, genBounds){

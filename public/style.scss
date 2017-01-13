@@ -140,4 +140,10 @@ input{
 	text-align: center;
 }
 
+.normalInputText{
+  background-color:transparent;
+  border: 0;
+  font-size: 1em;
+}
+
 // sass --update style.scss:style.css
