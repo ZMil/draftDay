@@ -12,9 +12,18 @@ componentDidMount() {
     		this.state.teamResults[selection.team].push(selection.pokemon);
     	}
     	console.log(this.state.showResults);
+    	//make pokemon disappear
     	this.state.showResults[selection.pokemonNum] = false;
     	var results = this.state.showResults;
     	this.setState({showResults: results});
+
+		if(this.state.teams.length < this.state.currentPlayer){
+	  		this.state.teams.push([selection.pokemon]);
+	  	} else{
+	  		this.state.teams[this.state.currentPlayer-1].push(selection.pokemon);
+	  	}	    	
+
+    	this.updateRound();
     });
 
     socket.on('flock', (j) => {
@@ -38,6 +47,54 @@ componentDidMount() {
     socket.on('player number', (number) => {
     	console.log(number);
     	this.setState({clientNumber: number});
+    });
+
+    socket.on('global preference change incoming', (preferences) => {
+    	if(preferences.baseStatMin != this.state.baseStatMin){
+    		this.setState({baseStatMin:preferences.baseStatMin});
+    	}
+    	if(preferences.megasOnly != this.state.megasOnly){
+    		this.setState({megasOnly: preferences.megasOnly});
+    	}
+    	if(preferences.finalFormOnly != this.state.finalFormOnly){
+    		this.setState({finalFormOnly: preferences.finalFormOnly});
+    	}
+    	if(preferences.tier != this.state.tier){
+    		this.setState({tier: preferences.tier});
+    	}
+
+    	this.setState({
+    				   
+    				   
+    				 
+    				   snakeDraft:preferences.snakeDraft,
+    				   Bird:preferences.Bird,
+			   	       Normal:preferences.Normal,
+			   	       Grass:preferences.Grass,
+			   	       Poison:preferences.Poison,
+			   	       Fire:preferences.Fire,
+			   	       Flying:preferences.Flying,
+			   	       Water:preferences.Water,
+			   	       Bug:preferences.Bug,
+			   	       Electric:preferences.Electric,
+			   	       Ground:preferences.Ground,
+			   	       Fairy:preferences.Fairy,
+			   	       Fighting:preferences.Fighting,
+			   	       Psychic:preferences.Psychic,
+			   	       Rock:preferences.Rock,
+			   	       Steel:preferences.Steel,
+			   	       Ice:preferences.Ice,
+			   	       Ghost:preferences.Ghost,
+			   	       Dark:preferences.Dark,
+			   	       Dragon:preferences.Dragon,
+			   	       gen1: preferences.gen1,
+    		           gen2:preferences.gen2,
+    		           gen3: preferences.gen3,
+    		           gen4:preferences.gen4,
+    		           gen5:preferences.gen5,
+    		           gen6:preferences.gen6,
+    		           gen7:preferences.gen7
+    				   });
     });
 
 }
@@ -80,7 +137,6 @@ componentDidMount() {
 			   	  linearDraft: false,
 			   	  turnOfEdgePlayer: 0, 
 			   	  directionOfSnakeDraft: 1, 
-			   	  serverValue: 'adfsf',
 			   	  teamResults: [],
 			   	  clientNumber: -1}; 
     this.handleChange = this.handleChange.bind(this);
@@ -99,6 +155,46 @@ componentDidMount() {
     this.restart = this.restart.bind(this);
     this.draftChange = this.draftChange.bind(this);
     this.onUpdateLabel = this.onUpdateLabel.bind(this);
+    this.updateRound = this.updateRound.bind(this);
+    this.changePreferences = this.changePreferences.bind(this);
+  }
+
+  changePreferences(){
+  	var preferences = {
+  				baseStatMin:this.state.baseStatMin,
+				megasOnly: this.state.megasOnly,
+				finalFormOnly:this.state.finalFormOnly,
+				tier:this.state.tier,
+				snakeDraft:this.state.snakeDraft,
+				Bird:this.state.Bird,
+				Normal:this.state.Normal,
+				Grass:this.state.Grass,
+				Poison:this.state.Poison,
+				Fire:this.state.Fire,
+				Flying:this.state.Flying,
+				Water:this.state.Water,
+				Bug:this.state.Bug,
+				Electric:this.state.Electric,
+				Ground:this.state.Ground,
+				Fairy:this.state.Fairy,
+				Fighting:this.state.Fighting,
+				Psychic:this.state.Psychic,
+				Rock:this.state.Rock,
+				Steel:this.state.Steel,
+				Ice:this.state.Ice,
+				Ghost:this.state.Ghost,
+				Dark:this.state.Dark,
+				Dragon:this.state.Dragon,
+				gen1: this.state.gen1,
+				gen2:this.state.gen2,
+				gen3: this.state.gen3,
+				gen4:                this.state.gen4,
+				gen5:                this.state.gen5,
+				gen6:                this.state.gen6,
+				gen7:                this.state.gen7
+
+  				};
+  	socket.emit('preference change', preferences);
   }
 
   onUpdateLabel(data){
@@ -108,6 +204,7 @@ componentDidMount() {
   draftChange(event){
   	var s = !this.state.snakeDraft;
   	this.setState({snakeDraft: s, linearDraft: !s});
+  	this.changePreferences();
   }
 
   unselectAll(event) {
@@ -173,11 +270,13 @@ componentDidMount() {
 
   handleBaseStatChange(event) {
   	this.setState({baseStatMin: event.target.value});
+  	this.changePreferences();
   }
 
   toggleTypes(){
   	var s = !this.state.showTypes;
   	this.setState({showTypes: s});
+  	this.changePreferences();
   }
 
   toggleIndType(event) {
@@ -261,6 +360,7 @@ componentDidMount() {
 			   		break;
 
   	}
+  	this.changePreferences();
   }
 
   selectPokemon(event) {
@@ -269,56 +369,49 @@ componentDidMount() {
   	socket.emit('selection made', {team: this.state.currentPlayer-1, 
   								   pokemon: event.name,
   								   pokemonNum: event.key});
+}
 
-  	if(this.state.teams.length < this.state.currentPlayer){
-  		this.state.teams.push([name]);
-  	} else{
-  		this.state.teams[this.state.currentPlayer-1].push(name);
-  	}
-  	//make pokemon disappear
-  	{this.state.showResults[number] = false}
-  	var results = this.state.showResults;
-  	this.setState({showResults: results});
-
+  updateRound(){
   	if(this.state.linearDraft){
-  		{this.state.lastPlayer = this.state.currentPlayer}
-		this.setState({lastPlayer: this.state.lastPlayer});
-	  	{this.state.currentPlayer += 1}  
-		if(this.state.currentPlayer > this.state.numberOfTeams){
-			{this.state.currentPlayer = 1}
-			{this.state.round += 1}
-			this.setState({round: this.state.round});
-		}
-		{this.state.nextPlayer = this.state.currentPlayer == this.state.numberOfTeams ? 1 : this.state.currentPlayer+1}
-		this.setState({nextPlayer: this.state.nextPlayer})
-	} else{
-		//is snake draft
-		{this.state.lastPlayer = this.state.currentPlayer}
-		this.setState({lastPlayer: this.state.lastPlayer});
-		if(this.state.currentPlayer == this.state.numberOfTeams || (this.state.currentPlayer == 1 && this.state.round > 1)) {
-			if(this.state.turnOfEdgePlayer > 0){
-				var reverse = -(this.state.directionOfSnakeDraft);
-				var nextPlayer = this.state.currentPlayer + reverse;
-				var nextNextPlayer = this.state.numberOfTeams > 2 ? this.state.currentPlayer + (2*reverse) : this.state.currentPlayer + reverse;
-				this.setState({turnOfEdgePlayer: 0, directionOfSnakeDraft: reverse, currentPlayer: nextPlayer, nextPlayer: nextNextPlayer});
-			} else{
-				this.setState({turnOfEdgePlayer: 1}); 
-				var nextPlayer = this.state.currentPlayer + -(this.state.directionOfSnakeDraft);
-				this.setState({nextPlayer: nextPlayer});
+	  		{this.state.lastPlayer = this.state.currentPlayer}
+			this.setState({lastPlayer: this.state.lastPlayer});
+		  	{this.state.currentPlayer += 1}  
+			if(this.state.currentPlayer > this.state.numberOfTeams){
+				{this.state.currentPlayer = 1}
 				{this.state.round += 1}
 				this.setState({round: this.state.round});
 			}
+			{this.state.nextPlayer = this.state.currentPlayer == this.state.numberOfTeams ? 1 : this.state.currentPlayer+1}
+			this.setState({nextPlayer: this.state.nextPlayer})
 		} else{
-			var nextPlayer = this.state.currentPlayer + this.state.directionOfSnakeDraft;
-			this.setState({currentPlayer: nextPlayer});
-			if(nextPlayer == this.state.numberOfTeams || nextPlayer == 1 ){
-
+			//is snake draft
+			{this.state.lastPlayer = this.state.currentPlayer}
+			this.setState({lastPlayer: this.state.lastPlayer});
+			if(this.state.currentPlayer == this.state.numberOfTeams || (this.state.currentPlayer == 1 && this.state.round > 1)) {
+				if(this.state.turnOfEdgePlayer > 0){
+					var reverse = -(this.state.directionOfSnakeDraft);
+					var nextPlayer = this.state.currentPlayer + reverse;
+					var nextNextPlayer = this.state.numberOfTeams > 2 ? this.state.currentPlayer + (2*reverse) : this.state.currentPlayer + reverse;
+					this.setState({turnOfEdgePlayer: 0, directionOfSnakeDraft: reverse, currentPlayer: nextPlayer, nextPlayer: nextNextPlayer});
+				} else{
+					this.setState({turnOfEdgePlayer: 1}); 
+					var nextPlayer = this.state.currentPlayer + -(this.state.directionOfSnakeDraft);
+					this.setState({nextPlayer: nextPlayer});
+					{this.state.round += 1}
+					this.setState({round: this.state.round});
+				}
 			} else{
-				nextPlayer += this.state.directionOfSnakeDraft;
-				this.setState({nextPlayer: nextPlayer});
+				var nextPlayer = this.state.currentPlayer + this.state.directionOfSnakeDraft;
+				this.setState({currentPlayer: nextPlayer});
+				if(nextPlayer == this.state.numberOfTeams || nextPlayer == 1 ){
+
+				} else{
+					nextPlayer += this.state.directionOfSnakeDraft;
+					this.setState({nextPlayer: nextPlayer});
+				}
 			}
 		}
-	}
+
 	this.setState({ready: true});
   	var moreThanOnePokemonLeft = false;
   	for(var i = 0; i < this.state.showResults.length; i++){
@@ -335,16 +428,19 @@ componentDidMount() {
 
   tierChange(event) {
   	this.setState({tier: event});
+  	this.changePreferences();
   }
 
   finalFormChange(event) {
   	var s = !this.state.finalFormOnly;
   	this.setState({finalFormOnly: s});
+  	this.changePreferences();
   }
 
   megasChange(event){
   	var s = !this.state.megasOnly;
   	this.setState({megasOnly: s});
+  	this.changePreferences();
   }
 
   generationChange(event){
@@ -378,6 +474,7 @@ componentDidMount() {
   			this.setState({gen7: s});
   			break;					
   	}
+  	this.changePreferences();
   }
 
   getResults() {
@@ -486,6 +583,8 @@ componentDidMount() {
 			  <h4>
 			  {this.state.numberOfTeams}
 			  </h4>
+
+			  
 		      <div onClick={this.draftChange}>
 		      	<DraftTypeInput name1="Snake Draft" name2="Linear Draft" value={this.state.snakeDraft}/>
 		      </div>	
@@ -625,6 +724,7 @@ componentDidMount() {
 			    </ButtonToolbar>
 		      </div>	      
 
+
 		      {!this.state.draftOver && !this.state.show ?
 		      	<Button bsStyle="primary" onClick={this.getResults}>GO</Button>
 		      : null}
@@ -637,11 +737,11 @@ componentDidMount() {
 			    </div>
 		      : null}
 
-		      <Navbar inverse className="navbar-dark text-primary text-center navbar-fixed-top">
-		      <b>YOU ARE PLAYER {this.state.clientNumber+1}</b>
-		      <br></br>
-		      {this.state.currentPlayer == this.state.clientNumber+1 ? <b>IT IS YOUR TURN</b> : null}
-		      </Navbar>
+		      {this.state.show ? null : 
+			      <Navbar inverse className="navbar-dark text-primary text-center navbar-fixed-top">
+			     	 <b>YOU ARE PLAYER {this.state.clientNumber+1}</b>
+			      </Navbar>
+		  	  }
 
 		      { this.state.show ? 
 					<Navbar inverse className="navbar-dark navbar-fixed-bottom">
@@ -659,7 +759,7 @@ componentDidMount() {
 							</li>
 							
 							<li className="text-primary col-md-4 middleText" >
-							
+								{this.state.currentPlayer == this.state.clientNumber+1 ? <h3 className="text-danger"><b>IT IS YOUR TURN</b></h3> : null}
 								<div className="text-center headerMiddleText"><b>Player {this.state.currentPlayer}</b></div> 
 								<div className="text-center headerMiddleText"><b>PICK YOUR POKEMON</b></div>
 								<hr></hr>
@@ -710,7 +810,19 @@ componentDidMount() {
 		            				<span>
 			            				<Pokemon name={name.name} image={name.image}></Pokemon>
 			            				<div>
-			            					<Button bsStyle="primary" onClick={(event)=>this.selectPokemon({name: name.name, key: key}, event)}>Draft {name.name}</Button>  
+			            					{this.state.currentPlayer == this.state.clientNumber + 1 ?
+				            					<Button 
+				            						bsStyle="primary" 
+				            						onClick={(event)=>this.selectPokemon({name: name.name, key: key}, event)}>
+				            							Draft {name.name}
+				            					</Button>  
+			            					: 
+				            					<Button 
+				            						bsStyle="primary" 
+				            						onClick={(event)=>this.selectPokemon({name: name.name, key: key}, event)} disabled>
+				            							Draft {name.name}
+				            					</Button> 
+			            					}
 			            				</div>
 			            			</span>
 			            			: null }

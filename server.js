@@ -62,9 +62,6 @@ var playerDictionary = {};
 var openNumbers = [];
 
 // TODO:
-// Sync round/who is picking/up next/etc.
-// Sync always updating teams
-// Only team that is up may choose a pokemon
 // Sync preferences before draft
 
 io.on('connection', function(socket){
@@ -76,9 +73,10 @@ io.on('connection', function(socket){
     else{
       playerDictionary[socket.id] = Object.keys(playerDictionary).length;
     }
-    console.log(socket.id+"has connected as player "+playerDictionary[socket.id]);  
+    console.log(socket.id+"has connected as Player "+playerDictionary[socket.id]);  
   } else {
-    console.log(socket.id+"has RECONNECTED as player "+playerDictionary[socket.id]);
+    //should never happen, I think? 
+    console.log(socket.id+"has RECONNECTED as Player "+playerDictionary[socket.id]);
   }
 
   io.to(socket.id).emit('player number', playerDictionary[socket.id]);
@@ -93,12 +91,13 @@ io.on('connection', function(socket){
     io.emit('flock', flock);
   });
 
-  socket.on('number of team change', function(teams){
-    
+  socket.on('preference change', function(preferences){
+    io.emit('global preference change incoming', preferences);
   });
+  
 
   socket.on('disconnect', function(){
-    console.log(socket.id+'has disconnected as '+playerDictionary[socket.id]);
+    console.log('Player '+playerDictionary[socket.id]+' has disconnected');
     openNumbers.push(playerDictionary[socket.id]);
     delete playerDictionary[socket.id];
   });
