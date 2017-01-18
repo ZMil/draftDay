@@ -1,5 +1,21 @@
+// var React = require('react');
+// var ReactBootstrap = require('react-bootstrap');
+
+// var Button = ReactBootstrap.Button;
+// var Navbar = ReactBootstrap.Navbar;
+// var Tooltip = ReactBootstrap.Tooltip;
+// var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+// var DropdownButton = ReactBootstrap.DropdownButton;
+// var MenuItem = ReactBootstrap.MenuItem;
+// var ButtonGroup = ReactBootstrap.ButtonGroup;
+// var Grid = ReactBootstrap.Grid;
+// var Row = ReactBootstrap.Row;
+// var Col = ReactBootstrap.Col;
+
+// var Router = require('react-router');
+
 var socket = io();
-var pokemans = [];
+
 class App extends React.Component {
 
 componentDidMount() {
@@ -29,7 +45,6 @@ componentDidMount() {
     socket.on('flock', (j) => {
     	console.log(j);
     	var data1 = j;
-    	pokemans = j;
     	this.setState({data: data1});
     	console.log(this.state.data);
     	var showResultsTemp = [];
@@ -49,54 +64,118 @@ componentDidMount() {
     	this.setState({clientNumber: number});
     });
 
-    socket.on('global preference change incoming', (preferences) => {
-    	if(preferences.baseStatMin != this.state.baseStatMin){
-    		this.setState({baseStatMin:preferences.baseStatMin});
-    	}
-    	if(preferences.megasOnly != this.state.megasOnly){
-    		this.setState({megasOnly: preferences.megasOnly});
-    	}
-    	if(preferences.finalFormOnly != this.state.finalFormOnly){
-    		this.setState({finalFormOnly: preferences.finalFormOnly});
-    	}
-    	if(preferences.tier != this.state.tier){
-    		this.setState({tier: preferences.tier});
-    	}
-
-    	this.setState({
-    				   
-    				   
-    				 
-    				   snakeDraft:preferences.snakeDraft,
-    				   Bird:preferences.Bird,
-			   	       Normal:preferences.Normal,
-			   	       Grass:preferences.Grass,
-			   	       Poison:preferences.Poison,
-			   	       Fire:preferences.Fire,
-			   	       Flying:preferences.Flying,
-			   	       Water:preferences.Water,
-			   	       Bug:preferences.Bug,
-			   	       Electric:preferences.Electric,
-			   	       Ground:preferences.Ground,
-			   	       Fairy:preferences.Fairy,
-			   	       Fighting:preferences.Fighting,
-			   	       Psychic:preferences.Psychic,
-			   	       Rock:preferences.Rock,
-			   	       Steel:preferences.Steel,
-			   	       Ice:preferences.Ice,
-			   	       Ghost:preferences.Ghost,
-			   	       Dark:preferences.Dark,
-			   	       Dragon:preferences.Dragon,
-			   	       gen1: preferences.gen1,
-    		           gen2:preferences.gen2,
-    		           gen3: preferences.gen3,
-    		           gen4:preferences.gen4,
-    		           gen5:preferences.gen5,
-    		           gen6:preferences.gen6,
-    		           gen7:preferences.gen7
-    				   });
+    socket.on('global snakeDraft change', (s) => {
+    	this.setState({snakeDraft: s});
     });
 
+    socket.on('global baseStatMin change', (value) =>{
+    	this.setState({baseStatMin: value});
+    });	
+
+    socket.on('global type toggle', (typeAndValue) =>{
+    	switch(typeAndValue.type){
+		       case "Bird":
+		       		this.setState({Bird: typeAndValue.value})
+		       		break;
+			   case "Normal":
+			   		this.setState({Normal: typeAndValue.value})
+			   		break;
+			   case "Grass":
+			   		this.setState({Grass: typeAndValue.value})
+			   		break;
+			   case "Poison":
+			   		this.setState({Poison: typeAndValue.value})
+			   		break;
+			   case "Fire":
+			   		this.setState({Fire: typeAndValue.value})
+			   		break;
+			   case "Flying":
+			   		this.setState({Flying: typeAndValue.value})
+			   		break;
+			   case "Water":
+			   		this.setState({Water: typeAndValue.value})
+			   		break;
+			   case "Bug":
+			   		this.setState({Bug: typeAndValue.value})
+			   		break;
+			   case "Electric":
+			   		this.setState({Electric: typeAndValue.value})
+			   		break;
+			   case "Ground":
+			   		this.setState({Ground: typeAndValue.value})
+			   		break;
+			   case "Fairy":
+			   		this.setState({Fairy: typeAndValue.value})
+			   		break;
+			   case "Fighting":
+			   		this.setState({Fighting: typeAndValue.value});
+			   		break
+			   case "Psychic":
+			   		this.setState({Psychic: typeAndValue.value})
+			   		break;
+			   case "Rock":
+			   		this.setState({Rock: typeAndValue.value})
+			   		break;
+			   case "Steel":
+			   		this.setState({Steel: typeAndValue.value})
+			   		break;
+			   case "Ice":
+			   		this.setState({Ice: typeAndValue.value})
+			   		break;
+			   case "Ghost":
+			   		this.setState({Ghost: typeAndValue.value})
+			   		break;
+			   case "Dark":
+			   		this.setState({Dark: typeAndValue.value})
+			   		break;
+			   case "Dragon":
+			   		this.setState({Dragon: typeAndValue.value})
+			   		break;
+			}
+    });	
+
+    socket.on('global tier change', (value) =>{
+    	this.setState({tier: value});
+    });	
+
+    socket.on('global finalFormChange', (value) =>{
+    	this.setState({finalFormOnly: value});
+    });	
+
+    socket.on('global megas change', (value) =>{
+    	this.setState({megasOnly: value});
+    });	
+
+    socket.on('global generation change', (genAndValue) =>{
+	  	switch(genAndValue.gen){
+	  		case "gen1":
+	  			this.setState({gen1: genAndValue.value});
+	  			break;
+			case "gen2":
+	  			this.setState({gen2: genAndValue.value});
+	  			break;
+	  		case "gen3":
+	  			this.setState({gen3: genAndValue.value});
+	  			break;
+	  		case "gen4":
+	  			this.setState({gen4: genAndValue.value});
+	  			break;
+	  		case "gen5":
+	  			this.setState({gen5: genAndValue.value});
+	  			break;
+	  		case "gen6":
+	  			this.setState({gen6: genAndValue.value});
+	  			break;
+	  		case "gen7":
+	  			this.setState({gen7: genAndValue.value});
+	  			break;					
+	  	}
+    });	
+
+    socket.on('roomID', (roomID)=>{
+    	console.log(roomID);
+    	this.setState({roomID: roomID});
+    });
 }
 
   constructor(props) {
@@ -138,7 +217,11 @@ componentDidMount() {
 			   	  turnOfEdgePlayer: 0, 
 			   	  directionOfSnakeDraft: 1, 
 			   	  teamResults: [],
-			   	  clientNumber: -1}; 
+			   	  clientNumber: -1,
+			   	  roomCreated: false,
+			   	  roomURL: "",
+			   	  proposedRoomID: "",
+			   	  roomID: ""}; 
     this.handleChange = this.handleChange.bind(this);
     this.getResults = this.getResults.bind(this);
     this.handleTeamChange = this.handleTeamChange.bind(this);
@@ -156,45 +239,25 @@ componentDidMount() {
     this.draftChange = this.draftChange.bind(this);
     this.onUpdateLabel = this.onUpdateLabel.bind(this);
     this.updateRound = this.updateRound.bind(this);
-    this.changePreferences = this.changePreferences.bind(this);
+    this.createRoom = this.createRoom.bind(this);
+    this.changeRoomID = this.changeRoomID.bind(this);
+    this.joinRoom = this.joinRoom.bind(this);
   }
 
-  changePreferences(){
-  	var preferences = {
-  				baseStatMin:this.state.baseStatMin,
-				megasOnly: this.state.megasOnly,
-				finalFormOnly:this.state.finalFormOnly,
-				tier:this.state.tier,
-				snakeDraft:this.state.snakeDraft,
-				Bird:this.state.Bird,
-				Normal:this.state.Normal,
-				Grass:this.state.Grass,
-				Poison:this.state.Poison,
-				Fire:this.state.Fire,
-				Flying:this.state.Flying,
-				Water:this.state.Water,
-				Bug:this.state.Bug,
-				Electric:this.state.Electric,
-				Ground:this.state.Ground,
-				Fairy:this.state.Fairy,
-				Fighting:this.state.Fighting,
-				Psychic:this.state.Psychic,
-				Rock:this.state.Rock,
-				Steel:this.state.Steel,
-				Ice:this.state.Ice,
-				Ghost:this.state.Ghost,
-				Dark:this.state.Dark,
-				Dragon:this.state.Dragon,
-				gen1: this.state.gen1,
-				gen2:this.state.gen2,
-				gen3: this.state.gen3,
-				gen4:                this.state.gen4,
-				gen5:                this.state.gen5,
-				gen6:                this.state.gen6,
-				gen7:                this.state.gen7
+  joinRoom(){
+  	this.setState({roomCreated: true});
+  	socket.emit('join room', {roomID: this.state.proposedRoomID});
+  }
 
-  				};
-  	socket.emit('preference change', preferences);
+  changeRoomID(event){
+  	this.setState({proposedRoomID: event.target.value});
+  }
+
+  createRoom(){	
+  	this.setState({roomCreated: true});
+  	var url = "room/asf";
+  	socket.emit('room creation', url);
+  	this.setState({roomURL: url});
   }
 
   onUpdateLabel(data){
@@ -204,7 +267,7 @@ componentDidMount() {
   draftChange(event){
   	var s = !this.state.snakeDraft;
   	this.setState({snakeDraft: s, linearDraft: !s});
-  	this.changePreferences();
+  	socket.emit('snakeDraft change', s);
   }
 
   unselectAll(event) {
@@ -270,97 +333,96 @@ componentDidMount() {
 
   handleBaseStatChange(event) {
   	this.setState({baseStatMin: event.target.value});
-  	this.changePreferences();
+  	socket.emit('baseStatMin change', event.target.value);
   }
 
   toggleTypes(){
   	var s = !this.state.showTypes;
   	this.setState({showTypes: s});
-  	this.changePreferences();
   }
 
   toggleIndType(event) {
+  	var s = "";
   	switch(event.type){
-  		
 		       case "Bird":
-		       		var s = !this.state.Bird;
+		       		s = !this.state.Bird;
 		       		this.setState({Bird: s})
 		       		break;
 			   case "Normal":
-			   		var s = !this.state.Normal;
+			   		s = !this.state.Normal;
 			   		this.setState({Normal: s})
 			   		break;
 			   case "Grass":
-			   		var s = !this.state.Grass;
+			   		s = !this.state.Grass;
 			   		this.setState({Grass: s})
 			   		break;
 			   case "Poison":
-			   		var s = !this.state.Poison;
+			   		s = !this.state.Poison;
 			   		this.setState({Poison: s})
 			   		break;
 			   case "Fire":
-			   		var s = !this.state.Fire;
+			   		s = !this.state.Fire;
 			   		this.setState({Fire: s})
 			   		break;
 			   case "Flying":
-			   		var s = !this.state.Flying;
+			   		s = !this.state.Flying;
 			   		this.setState({Flying: s})
 			   		break;
 			   case "Water":
-			   		var s = !this.state.Water;
+			   		s = !this.state.Water;
 			   		this.setState({Water: s})
 			   		break;
 			   case "Bug":
-			   		var s = !this.state.Bug;
+			   		s = !this.state.Bug;
 			   		this.setState({Bug: s})
 			   		break;
 			   case "Electric":
-			   		var s = !this.state.Electric;
+			   		s = !this.state.Electric;
 			   		this.setState({Electric: s})
 			   		break;
 			   case "Ground":
-			   		var s = !this.state.Ground;
+			   		s = !this.state.Ground;
 			   		this.setState({Ground: s})
 			   		break;
 			   case "Fairy":
-			   		var s = !this.state.Fairy;
+			   		s = !this.state.Fairy;
 			   		this.setState({Fairy: s})
 			   		break;
 			   case "Fighting":
-			   		var s = !this.state.Fighting;
+			   		s = !this.state.Fighting;
 			   		this.setState({Fighting: s});
 			   		break
 			   case "Psychic":
-			   		var s = !this.state.Psychic;
+			   		s = !this.state.Psychic;
 			   		this.setState({Psychic: s})
 			   		break;
 			   case "Rock":
-			   		var s = !this.state.Rock;
+			   		s = !this.state.Rock;
 			   		this.setState({Rock: s})
 			   		break;
 			   case "Steel":
-			   		var s = !this.state.Steel;
+			   		s = !this.state.Steel;
 			   		this.setState({Steel: s})
 			   		break;
 			   case "Ice":
-			   		var s = !this.state.Ice;
+			   		s = !this.state.Ice;
 			   		this.setState({Ice: s})
 			   		break;
 			   case "Ghost":
-			   		var s = !this.state.Ghost;
+			   		s = !this.state.Ghost;
 			   		this.setState({Ghost: s})
 			   		break;
 			   case "Dark":
-			   		var s = !this.state.Dark;
+			   		s = !this.state.Dark;
 			   		this.setState({Dark: s})
 			   		break;
 			   case "Dragon":
-			   		var s = !this.state.Dragon;
+			   		s = !this.state.Dragon;
 			   		this.setState({Dragon: s})
 			   		break;
 
   	}
-  	this.changePreferences();
+  	socket.emit('type toggle', {type: event.type, value: s});
   }
 
   selectPokemon(event) {
@@ -428,59 +490,57 @@ componentDidMount() {
 
   tierChange(event) {
   	this.setState({tier: event});
-  	this.changePreferences();
+  	socket.emit('tier change', event);
   }
 
   finalFormChange(event) {
   	var s = !this.state.finalFormOnly;
   	this.setState({finalFormOnly: s});
-  	this.changePreferences();
+  	socket.emit('finalFormChange', s);
   }
 
   megasChange(event){
   	var s = !this.state.megasOnly;
   	this.setState({megasOnly: s});
-  	this.changePreferences();
+  	socket.emit('megas change', s);
   }
 
   generationChange(event){
+  	var s = "";
   	switch(event.gen){
   		case "gen1":
-  			var s = !this.state.gen1;
+  			s = !this.state.gen1;
   			this.setState({gen1: s});
   			break;
 		case "gen2":
-  			var s = !this.state.gen2;
+  			s = !this.state.gen2;
   			this.setState({gen2: s});
   			break;
   		case "gen3":
-  			var s = !this.state.gen3;
+  			s = !this.state.gen3;
   			this.setState({gen3: s});
   			break;
   		case "gen4":
-  			var s = !this.state.gen4;
+  			s = !this.state.gen4;
   			this.setState({gen4: s});
   			break;
   		case "gen5":
-  			var s = !this.state.gen5;
+  			s = !this.state.gen5;
   			this.setState({gen5: s});
   			break;
   		case "gen6":
-  			var s = !this.state.gen6;
+  			s = !this.state.gen6;
   			this.setState({gen6: s});
   			break;
   		case "gen7":
-  			var s = !this.state.gen7;
+  			s = !this.state.gen7;
   			this.setState({gen7: s});
   			break;					
   	}
-  	this.changePreferences();
+  	socket.emit('generation change', {gen: event.gen, value: s});
   }
 
   getResults() {
-  	if(pokemans != []){
-  		console.log(pokemans);
-  	}
   	var genArray = [this.state.gen1,
   					this.state.gen2,
   					this.state.gen3,
@@ -561,290 +621,385 @@ componentDidMount() {
   render() {
     return ( 
     	<div>
-	      <div className="text-center">
-				{/* Generations **DONE**
-				Type (Double Type?)  **DONE**
-				Tiers **DONE**
-				Non legendarys **NOT POSSIBLE?**
-				Only legendarys **NOT POSSIBLE?**
-				Only third forms **DONE**
-				filter megas only **DONE**
-				sum base stats and base stat level **DONE**
-				*/}   
+    	  {this.state.roomCreated ?
+    	  		<div>
+		    	  <h2 className="text-center">
+		    	  	Room {this.state.roomID}
+		    	  </h2>
+			      <div className="text-center">
 
-		      {
-		      	// <div onChange={this.handleTeamChange}>
-  		     //  		<TextInput text="Number of Teams:" type="number" placeholder="Default is 2 Teams"/>
-  	   	  //       </div>
-		      }
-		      <h3>
-				Number of Players Connected:	 
-			  </h3> 
-			  <h4>
-			  {this.state.numberOfTeams}
-			  </h4>
+				      <h3>
+						Number of Players Connected:	 
+					  </h3> 
+					  <h4>
+					  {this.state.numberOfTeams}
+					  </h4>
+					  
+					  {this.state.clientNumber == 0 ?
+					  	<div>
+					      <div onClick={this.draftChange}>
+					      	<DraftTypeInput name1="Snake Draft" name2="Linear Draft" value={this.state.snakeDraft}/>
+					      </div>	
+						
+						  <br></br>
 
-			  
-		      <div onClick={this.draftChange}>
-		      	<DraftTypeInput name1="Snake Draft" name2="Linear Draft" value={this.state.snakeDraft}/>
-		      </div>	
-			
-			<br></br>
+					      <div>
+						    <ButtonToolbar>
+						      <Button className="textCenter" bsSize="large" onClick={this.toggleTypes}>
+						      	Filter by Types 
+						      	&nbsp;
+						      	<small>{ this.state.showTypes ? <span className="glyphicon glyphicon-menu-up text-right" aria-hidden="true"></span>
+						      	: <span className="glyphicon glyphicon-menu-down text-right" aria-hidden="true"></span>}</small>
+						      </Button>
+						    </ButtonToolbar>
+					      </div>
 
-		      <div>
-			    <ButtonToolbar>
-			      <Button className="textCenter" bsSize="large" onClick={this.toggleTypes}>
-			      	Filter by Types 
-			      	&nbsp;
-			      	<small>{ this.state.showTypes ? <span className="glyphicon glyphicon-menu-up text-right" aria-hidden="true"></span>
-			      	: <span className="glyphicon glyphicon-menu-down text-right" aria-hidden="true"></span>}</small>
-			      </Button>
-			    </ButtonToolbar>
-		      </div>
+					      { this.state.showTypes ? 
+							      	<ButtonToolbar className="text-center">
+							      	<ButtonGroup bsSize="large" >
+							      		<Button onClick={this.unselectAll}>
+							      			Unselect All
+							      		</Button>
+								         <Button onClick={(event)=>this.toggleIndType({type: "Bird", event})} 
+								         		 className={(this.state.Bird ? "Bird" : "unselectedButton")}> Bird
+								         </Button>
+							    		 <Button onClick={(event)=>this.toggleIndType({type: "Normal", event})} 
+							    		 		 className={(this.state.Normal ? "Normal" : "unselectedButton")}> Normal
+							    		 </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Grass", event})} 
+									     		 className={(this.state.Grass ? "Grass" : "unselectedButton")}> Grass
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Poison", event})} 
+									     		 className={(this.state.Poison ? "Poison" : "unselectedButton")}> Poison
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Fire", event})} 
+									     		 className={(this.state.Fire ? "Fire" : "unselectedButton")}> Fire
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Flying", event})} 
+									     		 className={(this.state.Flying ? "Flying" : "unselectedButton")}> Flying
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Water", event})} 
+									     		 className={(this.state.Water ? "Water" : "unselectedButton")}> Water
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Bug", event})} 
+									     		 className={(this.state.Bug ? "Bug" : "unselectedButton")}> Bug
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Electric", event})} 
+									     		 className={(this.state.Electric ? "Electric" : "unselectedButton")}> Electric
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Ground", event})} 
+									     		 className={(this.state.Ground ? "Ground" : "unselectedButton")}> Ground
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Fairy", event})} 
+									     		 className={(this.state.Fairy ? "Fairy" : "unselectedButton")}> Fairy
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Fighting", event})} 
+									     		 className={(this.state.Fighting ? "Fighting" : "unselectedButton")}> Fighting
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Psychic", event})} 
+									     		 className={(this.state.Psychic ? "Psychic" : "unselectedButton")}> Psychic
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Rock", event})} 
+									     		 className={(this.state.Rock ? "Rock" : "unselectedButton")}> Rock
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Steel", event})} 
+									     		 className={(this.state.Steel ? "Steel" : "unselectedButton")}> Steel
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Ice", event})}
+									     		  className={(this.state.Ice ? "Ice" : "unselectedButton")}> Ice
+									     	</Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Ghost", event})} 
+									     		 className={(this.state.Ghost ? "Ghost" : "unselectedButton")}> Ghost
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Dark", event})} 
+									     		 className={(this.state.Dark ? "Dark" : "unselectedButton")}> Dark
+									     </Button>
+									     <Button onClick={(event)=>this.toggleIndType({type: "Dragon", event})} 
+									     		 className={(this.state.Dragon ? "Dragon" : "unselectedButton")}> Dragon
+									     </Button>
+									     <Button onClick={this.selectAll}>
+							      			Select All
+							      		</Button>
+									    </ButtonGroup>
+									</ButtonToolbar>
+							: null}		 
 
-		      { this.state.showTypes ? 
-				      	<ButtonToolbar className="text-center">
-				      	<ButtonGroup bsSize="large" >
-				      		<Button onClick={this.unselectAll}>
-				      			Unselect All
-				      		</Button>
-					         <Button onClick={(event)=>this.toggleIndType({type: "Bird", event})} 
-					         		 className={(this.state.Bird ? "Bird" : "unselectedButton")}> Bird
-					         </Button>
-				    		 <Button onClick={(event)=>this.toggleIndType({type: "Normal", event})} 
-				    		 		 className={(this.state.Normal ? "Normal" : "unselectedButton")}> Normal
-				    		 </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Grass", event})} 
-						     		 className={(this.state.Grass ? "Grass" : "unselectedButton")}> Grass
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Poison", event})} 
-						     		 className={(this.state.Poison ? "Poison" : "unselectedButton")}> Poison
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Fire", event})} 
-						     		 className={(this.state.Fire ? "Fire" : "unselectedButton")}> Fire
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Flying", event})} 
-						     		 className={(this.state.Flying ? "Flying" : "unselectedButton")}> Flying
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Water", event})} 
-						     		 className={(this.state.Water ? "Water" : "unselectedButton")}> Water
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Bug", event})} 
-						     		 className={(this.state.Bug ? "Bug" : "unselectedButton")}> Bug
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Electric", event})} 
-						     		 className={(this.state.Electric ? "Electric" : "unselectedButton")}> Electric
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Ground", event})} 
-						     		 className={(this.state.Ground ? "Ground" : "unselectedButton")}> Ground
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Fairy", event})} 
-						     		 className={(this.state.Fairy ? "Fairy" : "unselectedButton")}> Fairy
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Fighting", event})} 
-						     		 className={(this.state.Fighting ? "Fighting" : "unselectedButton")}> Fighting
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Psychic", event})} 
-						     		 className={(this.state.Psychic ? "Psychic" : "unselectedButton")}> Psychic
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Rock", event})} 
-						     		 className={(this.state.Rock ? "Rock" : "unselectedButton")}> Rock
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Steel", event})} 
-						     		 className={(this.state.Steel ? "Steel" : "unselectedButton")}> Steel
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Ice", event})}
-						     		  className={(this.state.Ice ? "Ice" : "unselectedButton")}> Ice
-						     	</Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Ghost", event})} 
-						     		 className={(this.state.Ghost ? "Ghost" : "unselectedButton")}> Ghost
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Dark", event})} 
-						     		 className={(this.state.Dark ? "Dark" : "unselectedButton")}> Dark
-						     </Button>
-						     <Button onClick={(event)=>this.toggleIndType({type: "Dragon", event})} 
-						     		 className={(this.state.Dragon ? "Dragon" : "unselectedButton")}> Dragon
-						     </Button>
-						     <Button onClick={this.selectAll}>
-				      			Select All
-				      		</Button>
-						    </ButtonGroup>
-						</ButtonToolbar>
-				: null}		 
+					      <div>
+					      	<h3>Select Generation(s): </h3>
+					      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen1"}, event)}>	
+					      		<GenInput name="Gen 1" value="gen1"/>
+					      	</span>
+					      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen2"}, event)}>	
+					      		<GenInput name="Gen 2" value="gen2"/>
+					      	</span>
+					      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen3"}, event)}>	
+					      		<GenInput name="Gen 3" value="gen3"/>
+					      	</span>
+					      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen4"}, event)}>	
+					      		<GenInput name="Gen 4" value="gen4"/>
+					      	</span>
+					      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen5"}, event)}>	
+					      		<GenInput name="Gen 5" value="gen5"/>
+					      	</span>
+					      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen6"}, event)}>	
+					      		<GenInput name="Gen 6" value="gen6"/>
+					      	</span>
+					      </div>
 
-		      <div>
-		      	<h3>Select Generation(s): </h3>
-		      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen1"}, event)}>	
-		      		<GenInput name="Gen 1" value="gen1"/>
-		      	</span>
-		      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen2"}, event)}>	
-		      		<GenInput name="Gen 2" value="gen2"/>
-		      	</span>
-		      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen3"}, event)}>	
-		      		<GenInput name="Gen 3" value="gen3"/>
-		      	</span>
-		      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen4"}, event)}>	
-		      		<GenInput name="Gen 4" value="gen4"/>
-		      	</span>
-		      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen5"}, event)}>	
-		      		<GenInput name="Gen 5" value="gen5"/>
-		      	</span>
-		      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen6"}, event)}>	
-		      		<GenInput name="Gen 6" value="gen6"/>
-		      	</span>
-		      </div>
+					      <div onChange={this.handleBaseStatChange}>
+					      	<TextInput text="Minimum Cumulative Base Stats: " type="number"/>
+					      </div>
 
-		      <div onChange={this.handleBaseStatChange}>
-		      	<TextInput text="Minimum Cumulative Base Stats: " type="number"/>
-		      </div>
+					      <br></br>
 
-		      <br></br>
+					      <div onClick={this.finalFormChange}>
+					      	<Input name="Final Forms Only" value={this.state.finalFormOnly}/>
+					      </div>
 
-		      <div onClick={this.finalFormChange}>
-		      	<Input name="Final Forms Only" value={this.state.finalFormOnly}/>
-		      </div>
+					      <div onClick={this.megasChange}>
+					      	<Input name="Megas Only" value={this.state.megasOnly}/>
+					      </div>	
 
-		      <div onClick={this.megasChange}>
-		      	<Input name="Megas Only" value={this.state.megasOnly}/>
-		      </div>	
+					      <div>
+						    <ButtonToolbar className="textCenter1">
+						      <DropdownButton bsSize="large" title={this.state.tier} id="dropdown-size-large"  onSelect={this.tierChange}>
+							      <MenuItem eventKey="OU">OU</MenuItem>
+							      <MenuItem eventKey="UU">UU</MenuItem>
+							      <MenuItem eventKey="RU">RU</MenuItem>
+							      <MenuItem eventKey="NU">NU</MenuItem>
+							      <MenuItem eventKey="PU">PU</MenuItem>
+							      <MenuItem eventKey="LC">LC</MenuItem>
+							      <MenuItem eventKey="Uber">Uber</MenuItem>
+							      <MenuItem divider/>
+							      <MenuItem eventKey="Tiers">None</MenuItem>
+						      </DropdownButton>
+						    </ButtonToolbar>
+					      </div>	      
 
-		      <div>
-			    <ButtonToolbar className="textCenter1">
-			      <DropdownButton bsSize="large" title={this.state.tier} id="dropdown-size-large"  onSelect={this.tierChange}>
-				      <MenuItem eventKey="OU">OU</MenuItem>
-				      <MenuItem eventKey="UU">UU</MenuItem>
-				      <MenuItem eventKey="RU">RU</MenuItem>
-				      <MenuItem eventKey="NU">NU</MenuItem>
-				      <MenuItem eventKey="PU">PU</MenuItem>
-				      <MenuItem eventKey="LC">LC</MenuItem>
-				      <MenuItem eventKey="Uber">Uber</MenuItem>
-				      <MenuItem divider/>
-				      <MenuItem eventKey="Tiers">None</MenuItem>
-			      </DropdownButton>
-			    </ButtonToolbar>
-		      </div>	      
+					      {!this.state.draftOver && !this.state.show ?
+					      	<Button bsStyle="primary" onClick={this.getResults}>GO</Button>
+					      : null}
 
+					      {this.state.show || this.state.draftOver? 
+					      	<div>
+						      	<Button bsStyle="primary" onClick={this.getResults}>ReRoll Pokemon</Button>
+						      	&nbsp;&nbsp;&nbsp;&nbsp;
+						      	<Button bsStyle="primary" onClick={this.restart}>Start Over</Button>
+						    </div>
+					      : null}
 
-		      {!this.state.draftOver && !this.state.show ?
-		      	<Button bsStyle="primary" onClick={this.getResults}>GO</Button>
-		      : null}
+					    </div>
 
-		      {this.state.show || this.state.draftOver? 
-		      	<div>
-			      	<Button bsStyle="primary" onClick={this.getResults}>ReRoll Pokemon</Button>
-			      	&nbsp;&nbsp;&nbsp;&nbsp;
-			      	<Button bsStyle="primary" onClick={this.restart}>Start Over</Button>
-			    </div>
-		      : null}
+					:null}
 
-		      {this.state.show ? null : 
-			      <Navbar inverse className="navbar-dark text-primary text-center navbar-fixed-top">
-			     	 <b>YOU ARE PLAYER {this.state.clientNumber+1}</b>
-			      </Navbar>
-		  	  }
+					{this.state.clientNumber != 0 ?
+						<div>
+					      	<h2>Draft Options:</h2>
+					      	<div> This draft is a <b>{this.state.snakeDraft ? "Snake Draft": "Linear Draft"}</b></div>
 
-		      { this.state.show ? 
-					<Navbar inverse className="navbar-dark navbar-fixed-bottom">
-						<ul className="nav nav-pills nav-justified">
-							<li className="col-md-4"> 
-							{ this.state.ready ? 
-									<span>
-									<br></br>
-									<div className="text-left headerSideText text-muted"><b>Previous Pick:</b></div>
-									<div className="text-left headerSideText text-danger"><b>Player {this.state.lastPlayer}</b></div>
-									<div className="text-left headerSideText text-success"><b>
-										{this.state.teams[this.state.lastPlayer-1][this.state.lastPlayer == this.state.currentPlayer ? this.state.round - 2 : this.state.round-1]}
-										</b></div> 						</span>
-							: null}
-							</li>
-							
-							<li className="text-primary col-md-4 middleText" >
-								{this.state.currentPlayer == this.state.clientNumber+1 ? <h3 className="text-danger"><b>IT IS YOUR TURN</b></h3> : null}
-								<div className="text-center headerMiddleText"><b>Player {this.state.currentPlayer}</b></div> 
-								<div className="text-center headerMiddleText"><b>PICK YOUR POKEMON</b></div>
-								<hr></hr>
-								<div className="text-center headerMiddleText roundText"><b>ROUND {this.state.round}</b></div>
-							</li>
-							
-							<li className="col-md-4">
-							{ this.state.ready ? 
-								<span>
-								<br></br>
-								<div className="text-right headerSideText text-danger"><b>Player {this.state.nextPlayer}</b></div>
-								<div className="text-right headerSideText text-muted"><b>Is Up Next</b></div>
-								{this.state.round > 1 ? <div className="text-right headerSideText text-success"><b>Last Picked: {this.state.teams[this.state.nextPlayer-1][this.state.round - 2]}
-																										</b></div>
-									:null}
-								</span>
-								:null}
-							</li>
-					</ul>
-					</Navbar> 
-				: null }
+					    		   <div> Base Stats Min: 	<b>{String( this.state.baseStatMin ) }				</b></div>
+					    		   <div> Megas Only: 	<b>{String( this.state.megasOnly ) }				</b></div>
+					    		   <div> Final Forms Only: <b>{String( this.state.finalFormOnly ) }				</b></div>
+					    		   <div> Tier: 			<b>{this.state.tier == "Tiers" ? "No tier selected" : String( this.state.tier ) }				</b></div>
+			       				   
+					    		   	{	this.state.Bird 			&&
+										this.state.Normal 			&&
+										this.state.Grass 			&&
+										this.state.Poison 			&&
+										this.state.Fire 			&&
+										this.state.Flying 			&&
+										this.state.Water 			&&
+										this.state.Bug				&&
+										this.state.Electric			&&
+										this.state.Ground 			&&
+										this.state.Fairy 			&&
+										this.state.Fighting			&&
+										this.state.Psychic 			&&
+										this.state.Rock 			&&
+										this.state.Steel 			&&
+										this.state.Ice 				&&
+										this.state.Ghost 			&&
+										this.state.Dark 			&&
+										this.state.Dragon 			
+										? 
+										<div>
+											<b>All types selected</b>
+										</div>
 
-		      	<ul>
-					{this.state.teams.map((team, key) => {
-						return(
-							<li className="teamPokemon">
-								<h3>Team {key+1}</h3>
-								{team.map((pokemon, key1) => {
-										return (
-											<span key={key1}>  
-												<div>{pokemon}</div>
-												{!this.state.show ? <br></br> : null}
-											</span>
-										);
-									})}
-							</li>	
-						);
-					})}		      					
-				</ul>	
-	      </div>
-	     { this.state.show ? 
-	     	<div id="pokemon">
-	      		<ul>
-			      {this.state.data.map((name, key) => {
-		            return (  	
-		            		<li>
-		            			{this.state.showResults[key] ? 
-		            				<span>
-			            				<Pokemon name={name.name} image={name.image}></Pokemon>
-			            				<div>
-			            					{this.state.currentPlayer == this.state.clientNumber + 1 ?
-				            					<Button 
-				            						bsStyle="primary" 
-				            						onClick={(event)=>this.selectPokemon({name: name.name, key: key}, event)}>
-				            							Draft {name.name}
-				            					</Button>  
-			            					: 
-				            					<Button 
-				            						bsStyle="primary" 
-				            						onClick={(event)=>this.selectPokemon({name: name.name, key: key}, event)} disabled>
-				            							Draft {name.name}
-				            					</Button> 
-			            					}
-			            				</div>
-			            			</span>
-			            			: null }
-			            	</li>
-		            );
-		          })}
-		        </ul>  
-	      	</div>
-	    	: null}
-		    {this.state.show ?
-		    	<div>
-			      <br></br>
-			      <br></br>
-			      <br></br>
-			      <br></br>
-			      <br></br>
-			      <br></br>
-			      <br></br>
-			      <br></br>
-		      	</div>
-		    : null}
+										: 
+										<div>
+										   <div> Bird: 			{ !this.state.Bird 		? <b>{String(this.state.Bird 	)}	</b> : String(this.state.Bird 			)}			</div>
+								   	       <div> Normal: 		{ !this.state.Normal 	? <b>{String(this.state.Normal 	)}	</b> : String(this.state.Normal 	)	}				</div>
+								   	       <div> Grass: 		{ !this.state.Grass 	? <b>{String(this.state.Grass 	) }  </b> : String(this.state.Grass 		)}				</div>
+								   	       <div> Poison: 		{ !this.state.Poison 	? <b>{String(this.state.Poison 	)}	</b> : String(this.state.Poison 	)	}				</div>
+								   	       <div> Fire: 			{ !this.state.Fire 		? <b>{String(this.state.Fire 	)}	</b> : String(this.state.Fire 			)}			</div>
+								   	       <div> Flying: 		{ !this.state.Flying 	? <b>{String(this.state.Flying 	)}	</b> : String(this.state.Flying 	)	}				</div>
+								   	       <div> Water: 		{ !this.state.Water 	? <b>{String(this.state.Water 	) }  </b> : String(this.state.Water 		)}				</div>
+								   	       <div> Bug:			{ !this.state.Bug 		? <b>{String(this.state.Bug 		) }  </b> : String(this.state.Bug 			)}			</div>
+								   	       <div> Electric: 		{ !this.state.Electric 	? <b>{String(this.state.Electric )}	</b> : String(this.state.Electric) 		}			</div>
+								   	       <div> Ground: 		{ !this.state.Ground 	? <b>{String(this.state.Ground 	)}	</b> : String(this.state.Ground 	)	}				</div>
+								   	       <div> Fairy: 		{ !this.state.Fairy 	? <b>{String(this.state.Fairy 	) }  </b> : String(this.state.Fairy 		)}				</div>
+								   	       <div> Fighting: 		{ !this.state.Fighting 	? <b>{String(this.state.Fighting) }		</b> : String(this.state.Fighting) 		}			</div>
+								   	       <div> Psychic: 		{ !this.state.Psychic 	? <b>{String(this.state.Psychic )}		</b> : String(this.state.Psychic )		}			</div>
+								   	       <div> Rock: 			{ !this.state.Rock 		? <b>{String(this.state.Rock 	)	}</b> : String(this.state.Rock 			)}			</div>
+								   	       <div> Steel: 		{ !this.state.Steel 	? <b>{String(this.state.Steel 		)}</b> : String(this.state.Steel 		)}				</div>
+								   	       <div> Ice: 			{ !this.state.Ice 		? <b>{String(this.state.Ice 		)}</b> : String(this.state.Ice 			)}			</div>
+								   	       <div> Ghost: 		{ !this.state.Ghost 	? <b>{String(this.state.Ghost 		)}</b> : String(this.state.Ghost 		)}				</div>
+								   	       <div> Dark: 			{ !this.state.Dark 		? <b>{String(this.state.Dark 		)}</b> : String(this.state.Dark 			)}			</div>
+								   	       <div> Dragon: 		{ !this.state.Dragon 	? <b>{String(this.state.Dragon 	)	}</b> : String(this.state.Dragon 	)	}				</div>
+					    		        </div>
+
+					    		    }
+					    		    {this.state.gen1 &&
+									this.state.gen2 &&
+									this.state.gen3 &&
+									this.state.gen4 &&
+									this.state.gen5 &&
+									this.state.gen6 &&
+									this.state.gen7 
+									? 
+									<div>
+										<b>All generations selected</b>
+									</div>
+									:
+					    		    	<div>
+						    		    	   <div> gen1: 			{!this.state.gen1 ? <b>{String( this.state.gen1 ) }</b> : String( this.state.gen1 ) }				</div>
+						    		           <div> gen2: 			{!this.state.gen2 ? <b>{String( this.state.gen2 ) }</b> : String( this.state.gen2 ) }				</div>
+						    		           <div> gen3: 			{!this.state.gen3 ? <b>{String( this.state.gen3 ) }</b> : String( this.state.gen3 ) }				</div>
+						    		           <div> gen4: 			{!this.state.gen4 ? <b>{String( this.state.gen4 ) }</b> : String( this.state.gen4 ) }				</div>
+						    		           <div> gen5: 			{!this.state.gen5 ? <b>{String( this.state.gen5 ) }</b> : String( this.state.gen5 ) }				</div>
+						    		           <div> gen6: 			{!this.state.gen6 ? <b>{String( this.state.gen6 ) }</b> : String( this.state.gen6 ) }				</div>
+						    		           <div> gen7: 			{!this.state.gen7 ? <b>{String( this.state.gen7 ) }</b> : String( this.state.gen7 ) }				</div>
+						    		    </div>       
+
+						    		}
+						</div>
+
+					: null}
+
+				      {this.state.show ? null : 
+					      <Navbar inverse className="navbar-dark text-primary text-center navbar-fixed-top">
+					     	 <b>YOU ARE PLAYER {this.state.clientNumber+1}</b>
+					     	 {this.state.clientNumber == 0 ?
+					     	 	<div className="text-danger"><b>YOU ARE THE HOST <br></br>
+					     	 	YOU ARE RESPONSIBLE FOR SELECTING THE PREFERENCES AND STARTING THE DRAFT</b></div>
+					     	 	: null}
+					      </Navbar>
+				  	  }
+
+				      { this.state.show ? 
+							<Navbar inverse className="navbar-dark navbar-fixed-bottom">
+								<ul className="nav nav-pills nav-justified">
+									<li className="col-md-4"> 
+									{ this.state.ready ? 
+											<span>
+											<br></br>
+											<div className="text-left headerSideText text-muted"><b>Previous Pick:</b></div>
+											<div className="text-left headerSideText text-danger"><b>Player {this.state.lastPlayer}</b></div>
+											<div className="text-left headerSideText text-success"><b>
+												{this.state.teams[this.state.lastPlayer-1][this.state.lastPlayer == this.state.currentPlayer ? this.state.round - 2 : this.state.round-1]}
+												</b></div> 						</span>
+									: null}
+									</li>
+									
+									<li className="text-primary col-md-4 middleText" >
+										{this.state.currentPlayer == this.state.clientNumber+1 ? <h3 className="text-danger"><b>IT IS YOUR TURN</b></h3> : null}
+										<div className="text-center headerMiddleText"><b>Player {this.state.currentPlayer}</b></div> 
+										<div className="text-center headerMiddleText"><b>PICK YOUR POKEMON</b></div>
+										<hr></hr>
+										<div className="text-center headerMiddleText roundText"><b>ROUND {this.state.round}</b></div>
+									</li>
+									
+									<li className="col-md-4">
+									{ this.state.ready ? 
+										<span>
+										<br></br>
+										<div className="text-right headerSideText text-danger"><b>Player {this.state.nextPlayer}</b></div>
+										<div className="text-right headerSideText text-muted"><b>Is Up Next</b></div>
+										{this.state.round > 1 ? <div className="text-right headerSideText text-success"><b>Last Picked: {this.state.teams[this.state.nextPlayer-1][this.state.round - 2]}
+																												</b></div>
+											:null}
+										</span>
+										:null}
+									</li>
+							</ul>
+							</Navbar> 
+						: null }
+
+				      	<ul>
+							{this.state.teams.map((team, key) => {
+								return(
+									<li className="teamPokemon">
+										<h3>Team {key+1}</h3>
+										{team.map((pokemon, key1) => {
+												return (
+													<span key={key1}>  
+														<div>{pokemon}</div>
+														{!this.state.show ? <br></br> : null}
+													</span>
+												);
+											})}
+									</li>	
+								);
+							})}		      					
+						</ul>	
+			      </div>
+			     { this.state.show ? 
+			     	<div id="pokemon">
+			      		<ul>
+					      {this.state.data.map((name, key) => {
+				            return (  	
+				            		<li>
+				            			{this.state.showResults[key] ? 
+				            				<span>
+					            				<Pokemon name={name.name} image={name.image}></Pokemon>
+					            				<div>
+					            					{this.state.currentPlayer == this.state.clientNumber + 1 ?
+						            					<Button 
+						            						bsStyle="primary" 
+						            						onClick={(event)=>this.selectPokemon({name: name.name, key: key}, event)}>
+						            							Draft {name.name}
+						            					</Button>  
+					            					: 
+						            					<Button 
+						            						bsStyle="primary" 
+						            						onClick={(event)=>this.selectPokemon({name: name.name, key: key}, event)} disabled>
+						            							Draft {name.name}
+						            					</Button> 
+					            					}
+					            				</div>
+					            			</span>
+					            			: null }
+					            	</li>
+				            );
+				          })}
+				        </ul>  
+			      	</div>
+			    	: null}
+				    {this.state.show ?
+				    	<div>
+					      <br></br>
+					      <br></br>
+					      <br></br>
+					      <br></br>
+					      <br></br>
+					      <br></br>
+					      <br></br>
+					      <br></br>
+				      	</div>
+				    : null}
+			    </div>	
+		   : 
+		   <div>
+			   <a onClick={this.createRoom}>Create Room</a>
+				 <div onChange={this.changeRoomID}>
+					<TextInput text="Enter Room ID: " type="text"/>
+				 </div>
+				 <Button onClick={this.joinRoom}>Join Room</Button>
+			</div>
+			 }
 	    </div>
+ 
      );
   }
 }
@@ -955,7 +1110,7 @@ class SocketBanner extends React.Component {
 	}
 }
 
-var output = ReactDOM.render(
-	<App/>, 
+ReactDOM.render(
+	<App/>		,
 	document.getElementById('app')
 );

@@ -4,6 +4,8 @@ var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+// app.use(router);
+var ejs = require('ejs');
 
 
 //some variables
@@ -58,51 +60,121 @@ for(pokemon in battlePokedex){
 	pokemonArray[battlePokedex[pokemon].num] = battlePokedex[pokemon];
 }
 
-var playerDictionary = {};
-var openNumbers = [];
+var openNumbersForRooms = {};
 
-// TODO:
-// Sync preferences before draft
+var rooms = [];
+var roomLookUp = {};
+var roomPlayerDictionary = [];
+
+Object.values = obj => Object.keys(obj).map(key => obj[key]);
 
 io.on('connection', function(socket){
 
-  if(playerDictionary[socket.id] == undefined){
-    if(openNumbers.length != 0){
-      playerDictionary[socket.id] = openNumbers.shift();
-    } 
-    else{
-      playerDictionary[socket.id] = Object.keys(playerDictionary).length;
-    }
-    console.log(socket.id+"has connected as Player "+playerDictionary[socket.id]);  
-  } else {
-    //should never happen, I think? 
-    console.log(socket.id+"has RECONNECTED as Player "+playerDictionary[socket.id]);
-  }
-
-  io.to(socket.id).emit('player number', playerDictionary[socket.id]);
-  io.emit('teamNumberChange', Object.keys(playerDictionary).length);
-
   socket.on('selection made', function(selection){
     console.log(selection);
-    io.emit('broadcast pick', selection);
+    io.to(roomLookUp[socket.id]).emit('broadcast pick', selection);
   });
 
   socket.on('start', function(flock){
-    io.emit('flock', flock);
+    io.to(roomLookUp[socket.id]).emit('flock', flock);
   });
 
-  socket.on('preference change', function(preferences){
-    io.emit('global preference change incoming', preferences);
+  socket.on('snakeDraft change', function(s){
+    io.to(roomLookUp[socket.id]).emit('global snakeDraft change', s);
   });
   
+  socket.on('baseStatMin change', function(value){
+    io.to(roomLookUp[socket.id]).emit('global baseStatMin change', value);
+  });
+
+  socket.on('type toggle', function(typeAndValue){
+    io.to(roomLookUp[socket.id]).emit('global type toggle', {type: typeAndValue.type, value: typeAndValue.value});
+  });
+
+  socket.on('tier change', function(value){
+    io.to(roomLookUp[socket.id]).emit('global tier change', value);
+  });
+
+  socket.on('finalFormChange', function(value){
+    io.to(roomLookUp[socket.id]).emit('global finalFormChange', value);
+  });
+
+   socket.on('megas change', function(value){
+    io.to(roomLookUp[socket.id]).emit('global megas change', value);
+  });
+
+   socket.on('generation change', function(genAndValue){
+    io.to(roomLookUp[socket.id]).emit('global generation change', {gen: genAndValue.gen, value: genAndValue.value});
+  });
+
+   socket.on('join room', function(roomID){
+    if(!rooms.includes(roomID.roomID)){
+      rooms.push(roomID.roomID);
+      roomPlayerDictionary[roomID.roomID] = {};
+    }
+    socket.join(roomID.roomID);
+    roomLookUp[socket.id] = roomID.roomID;
+
+    if(roomPlayerDictionary[roomID.roomID][socket.id] == undefined){
+      if(openNumbersForRooms[roomID.roomID] != undefined && openNumbersForRooms[roomID.roomID].length != 0){
+        roomPlayerDictionary[roomID.roomID][socket.id] = openNumbersForRooms[roomID.roomID].shift();
+      } 
+      else{
+        roomPlayerDictionary[roomID.roomID][socket.id] = Object.keys(roomPlayerDictionary[roomID.roomID]).length;
+      }
+      console.log("socket "+socket.id+" has joined room "+roomID.roomID+" as Player "+roomPlayerDictionary[roomID.roomID][socket.id]);
+    } else {
+      //should never happen, I think? 
+      console.log(socket.id+"has RECONNECTED as Player "+roomPlayerDictionary[roomID.roomID][socket.id]);
+    }
+
+    io.to(socket.id).emit('roomID', roomLookUp[socket.id]);
+    io.to(socket.id).emit('player number', roomPlayerDictionary[roomID.roomID][socket.id]);
+    io.to(roomLookUp[socket.id]).emit('teamNumberChange', Object.keys(roomPlayerDictionary[roomID.roomID]).length);  
+   });
+
 
   socket.on('disconnect', function(){
-    console.log('Player '+playerDictionary[socket.id]+' has disconnected');
-    openNumbers.push(playerDictionary[socket.id]);
-    delete playerDictionary[socket.id];
+    if(roomPlayerDictionary[roomLookUp[socket.id]] != undefined){
+      if(roomPlayerDictionary[roomLookUp[socket.id]][socket.id] != undefined){
+
+        console.log('Player '+roomPlayerDictionary[roomLookUp[socket.id]][socket.id]+' has disconnected from room '+ roomLookUp[socket.id]);
+
+        if( openNumbersForRooms[roomLookUp[socket.id]] == undefined){
+           openNumbersForRooms[roomLookUp[socket.id]] = [roomPlayerDictionary[roomLookUp[socket.id]][socket.id]];
+        } 
+        else{
+          openNumbersForRooms[roomLookUp[socket.id]].push(roomPlayerDictionary[roomLookUp[socket.id]][socket.id]);
+        }
+
+        var rID = roomLookUp[socket.id];
+        delete roomPlayerDictionary[roomLookUp[socket.id]][socket.id];
+        delete roomLookUp[socket.id];
+        io.to(rID).emit('teamNumberChange', Object.keys(roomPlayerDictionary[rID]).length);
+        
+        if(Object.values(openNumbersForRooms[rID]).includes(0) && Object.keys(roomPlayerDictionary[rID]).length > 0){
+          var newLeaderID = "";
+          for(player in roomPlayerDictionary[rID]){
+            var oldNumber = roomPlayerDictionary[rID][player];
+            newLeaderID = player;
+            roomPlayerDictionary[rID][player] = 0;
+            var index = openNumbersForRooms[rID].indexOf(0);
+            openNumbersForRooms[rID].splice(index, 1);
+            openNumbersForRooms[rID].push(oldNumber);
+            console.log(openNumbersForRooms[rID]);
+            break;
+          }
+          
+          io.to(player).emit('player number', roomPlayerDictionary[rID][newLeaderID]);
+        }
+      }
+    }
   });
 });
 
+app.get('/room/:id', function(req, res){
+  
+});
 
 app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr', function(req, res) {
   var teams = req.params.numberOfTeams;
