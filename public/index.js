@@ -55,6 +55,11 @@ componentDidMount() {
 
     socket.on('teamNumberChange', (teams) => {
     	this.setState({numberOfTeams: teams});
+    	var arr = [];
+    	for(var i = 0; i < teams; i++){
+    		arr.push(i);
+    	}
+    	this.setState({numberOfTeamsArray: arr});
     });
 
     socket.on('player number', (number) => {
@@ -360,7 +365,8 @@ componentDidMount() {
 			   	  clientNumber: -1,
 			   	  roomCreated: false,
 			   	  proposedRoomID: "",
-			   	  roomID: ""}; 
+			   	  roomID: "",
+			   	  numberOfTeamsArray: [0]}; 
     this.handleChange = this.handleChange.bind(this);
     this.getResults = this.getResults.bind(this);
     this.handleTeamChange = this.handleTeamChange.bind(this);
@@ -1004,10 +1010,20 @@ componentDidMount() {
 						    		    </div>       
 
 						    		}
+						
 						</div>
 
 					: null}
+					<br></br>
+					<div>
+						{this.state.numberOfTeamsArray.map((a, key) => {
+							return(
+								<ReadyButton key={key} player={key+1}/>
+							);
+						})}	
+					</div>
 
+				
 				      {this.state.show ? null : 
 					      <Navbar inverse className="navbar-dark text-primary text-center navbar-fixed-top">
 					     	 <b>YOU ARE PLAYER {this.state.clientNumber+1}</b>
@@ -1232,10 +1248,19 @@ class Pokemon extends React.Component {
 	}
 }
 
-class SocketBanner extends React.Component {
+class ReadyButton extends React.Component {
+	componentDidMount(){
+  		$('.toggleOffInput').bootstrapToggle('off');
+	}
+	componentDidUpdate(){
+	    $('.toggleOffInput').bootstrapToggle();
+	}
+
 	render(){
-		return(
-			<h>{this.props.value}</h>
+		return (
+			<span>
+				<input className="toggleInput" type="checkbox" data-toggle="toggle" data-on={'Player '+this.props.player+' Ready'} data-off={'Player '+this.props.player+' Not Ready'} data-onstyle="success" data-offstyle="danger"/>
+			</span>
 		);
 	}
 }
