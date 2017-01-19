@@ -66,6 +66,10 @@ var rooms = [];
 var roomLookUp = {};
 var roomPlayerDictionary = [];
 
+var playersReadyByRoom = {};
+
+var updatesPerRoom = {};
+
 Object.values = obj => Object.keys(obj).map(key => obj[key]);
 
 io.on('connection', function(socket){
@@ -73,44 +77,64 @@ io.on('connection', function(socket){
   socket.on('selection made', function(selection){
     console.log(selection);
     io.to(roomLookUp[socket.id]).emit('broadcast pick', selection);
+    if(updatesPerRoom[roomLookUp[socket.id]]['selections'] != undefined){
+      updatesPerRoom[roomLookUp[socket.id]]['selections'].push(selection);
+    }
+    else{
+      updatesPerRoom[roomLookUp[socket.id]]['selections'] = [selection];
+    }
   });
 
   socket.on('start', function(flock){
     io.to(roomLookUp[socket.id]).emit('flock', flock);
+    updatesPerRoom[roomLookUp[socket.id]]['flock'] = flock;
   });
 
   socket.on('snakeDraft change', function(s){
     io.to(roomLookUp[socket.id]).emit('global snakeDraft change', s);
+    updatesPerRoom[roomLookUp[socket.id]]['snakeDraft'] = s;
   });
   
   socket.on('baseStatMin change', function(value){
     io.to(roomLookUp[socket.id]).emit('global baseStatMin change', value);
+    updatesPerRoom[roomLookUp[socket.id]]['baseStatMin'] = value;
   });
 
   socket.on('type toggle', function(typeAndValue){
     io.to(roomLookUp[socket.id]).emit('global type toggle', {type: typeAndValue.type, value: typeAndValue.value});
+    updatesPerRoom[roomLookUp[socket.id]]['type toggle'] = {type: typeAndValue.type, value: typeAndValue.value};
   });
 
   socket.on('tier change', function(value){
     io.to(roomLookUp[socket.id]).emit('global tier change', value);
+    updatesPerRoom[roomLookUp[socket.id]]['tier change'] = value;
   });
 
   socket.on('finalFormChange', function(value){
     io.to(roomLookUp[socket.id]).emit('global finalFormChange', value);
+    updatesPerRoom[roomLookUp[socket.id]]['finalFormChange'] = value;
   });
 
    socket.on('megas change', function(value){
     io.to(roomLookUp[socket.id]).emit('global megas change', value);
+    updatesPerRoom[roomLookUp[socket.id]]['megas change'] = value;
   });
 
    socket.on('generation change', function(genAndValue){
     io.to(roomLookUp[socket.id]).emit('global generation change', {gen: genAndValue.gen, value: genAndValue.value});
+    if(updatesPerRoom[roomLookUp[socket.id]]['generation change'] != undefined){
+      updatesPerRoom[roomLookUp[socket.id]]['generation change'].push({gen: genAndValue.gen, value: genAndValue.value});
+    }
+    else{
+      updatesPerRoom[roomLookUp[socket.id]]['generation change'] = [{gen: genAndValue.gen, value: genAndValue.value}];
+    }
   });
 
    socket.on('join room', function(roomID){
     if(!rooms.includes(roomID.roomID)){
       rooms.push(roomID.roomID);
       roomPlayerDictionary[roomID.roomID] = {};
+      updatesPerRoom[roomID.roomID] = {};
     }
     socket.join(roomID.roomID);
     roomLookUp[socket.id] = roomID.roomID;
@@ -131,6 +155,8 @@ io.on('connection', function(socket){
     io.to(socket.id).emit('roomID', roomLookUp[socket.id]);
     io.to(socket.id).emit('player number', roomPlayerDictionary[roomID.roomID][socket.id]);
     io.to(roomLookUp[socket.id]).emit('teamNumberChange', Object.keys(roomPlayerDictionary[roomID.roomID]).length);  
+
+    io.to(socket.id).emit('update preferences', updatesPerRoom[roomLookUp[socket.id]]);
    });
 
 
@@ -164,7 +190,7 @@ io.on('connection', function(socket){
             console.log(openNumbersForRooms[rID]);
             break;
           }
-          
+
           io.to(player).emit('player number', roomPlayerDictionary[rID][newLeaderID]);
         }
       }

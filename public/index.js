@@ -43,10 +43,8 @@ componentDidMount() {
     });
 
     socket.on('flock', (j) => {
-    	console.log(j);
     	var data1 = j;
     	this.setState({data: data1});
-    	console.log(this.state.data);
     	var showResultsTemp = [];
 		for(var i = 0; i < j.length; i++){
 			showResultsTemp.push(true);
@@ -176,6 +174,148 @@ componentDidMount() {
     	console.log(roomID);
     	this.setState({roomID: roomID});
     });
+
+    socket.on('update preferences', (updates) => {
+    	console.log(updates);
+    	for(var key in updates){
+    		switch(key){
+    			case 'flock':
+			    	this.setState({data: updates['flock']});
+			    	var showResultsTemp = [];
+					for(var i = 0; i < updates['flock'].length; i++){
+						showResultsTemp.push(true);
+					}
+					this.setState({show: true});
+					this.setState({showResults: showResultsTemp});
+    				break;
+    			case 'snakeDraft':
+    				this.setState({snakeDraft: updates[key]});
+    				break;
+    			case 'baseStatMin':
+    				this.setState({baseStatMin: updates[key]});
+    				break;
+    			case 'type toggle':
+    				switch(updates[key].type){
+				       case "Bird":
+				       		this.setState({Bird: updates[key].value})
+				       		break;
+					   case "Normal":
+					   		this.setState({Normal: updates[key].value})
+					   		break;
+					   case "Grass":
+					   		this.setState({Grass: updates[key].value})
+					   		break;
+					   case "Poison":
+					   		this.setState({Poison: updates[key].value})
+					   		break;
+					   case "Fire":
+					   		this.setState({Fire: updates[key].value})
+					   		break;
+					   case "Flying":
+					   		this.setState({Flying: updates[key].value})
+					   		break;
+					   case "Water":
+					   		this.setState({Water: updates[key].value})
+					   		break;
+					   case "Bug":
+					   		this.setState({Bug: updates[key].value})
+					   		break;
+					   case "Electric":
+					   		this.setState({Electric: updates[key].value})
+					   		break;
+					   case "Ground":
+					   		this.setState({Ground: updates[key].value})
+					   		break;
+					   case "Fairy":
+					   		this.setState({Fairy: updates[key].value})
+					   		break;
+					   case "Fighting":
+					   		this.setState({Fighting: updates[key].value});
+					   		break
+					   case "Psychic":
+					   		this.setState({Psychic: updates[key].value})
+					   		break;
+					   case "Rock":
+					   		this.setState({Rock: updates[key].value})
+					   		break;
+					   case "Steel":
+					   		this.setState({Steel: updates[key].value})
+					   		break;
+					   case "Ice":
+					   		this.setState({Ice: updates[key].value})
+					   		break;
+					   case "Ghost":
+					   		this.setState({Ghost: updates[key].value})
+					   		break;
+					   case "Dark":
+					   		this.setState({Dark: updates[key].value})
+					   		break;
+					   case "Dragon":
+					   		this.setState({Dragon: updates[key].value})
+					   		break;
+					}
+    				break;
+    			case 'tier change':
+    				this.setState({tier: updates[key]});
+    				break;
+    			case 'finalFormChange':
+    				this.setState({finalFormOnly: updates[key]});
+    				break;
+    			case 'megas change':
+    				this.setState({megasOnly: updates[key]});
+    				break;
+    			case 'generation change':
+    				for(var genUpdate in updates[key]){
+	    				switch(updates[key][genUpdate].gen){
+					  		case "gen1":
+					  			this.setState({gen1: updates[key][genUpdate].value});
+					  			break;
+							case "gen2":
+					  			this.setState({gen2: updates[key][genUpdate].value});
+					  			break;
+					  		case "gen3":
+					  			this.setState({gen3: updates[key][genUpdate].value});
+					  			break;
+					  		case "gen4":
+					  			this.setState({gen4: updates[key][genUpdate].value});
+					  			break;
+					  		case "gen5":
+					  			this.setState({gen5: updates[key][genUpdate].value});
+					  			break;
+					  		case "gen6":
+					  			this.setState({gen6: updates[key][genUpdate].value});
+					  			break;
+					  		case "gen7":
+					  			this.setState({gen7: updates[key][genUpdate].value});
+					  			break;					
+					  	}
+					}
+    				break;
+    			case 'selections':
+    				for(var selectionKey in updates[key]){
+    					var selection = updates[key][selectionKey];
+    					if(this.state.teamResults.length - 1 < selection.team){
+				    		this.state.teamResults.push([selection.pokemon]);
+				    	} else {
+				    		this.state.teamResults[selection.team].push(selection.pokemon);
+				    	}
+				    	//make pokemon disappear
+				    	this.state.showResults[selection.pokemonNum] = false;
+				    	var results = this.state.showResults;
+				    	this.setState({showResults: results});
+
+						if(this.state.teams.length < this.state.currentPlayer){
+					  		this.state.teams.push([selection.pokemon]);
+					  	} else{
+					  		this.state.teams[this.state.currentPlayer-1].push(selection.pokemon);
+					  	}	    	
+
+				    	this.updateRound();
+    				}
+    				break;
+    		}
+    	}
+    });
 }
 
   constructor(props) {
@@ -219,7 +359,6 @@ componentDidMount() {
 			   	  teamResults: [],
 			   	  clientNumber: -1,
 			   	  roomCreated: false,
-			   	  roomURL: "",
 			   	  proposedRoomID: "",
 			   	  roomID: ""}; 
     this.handleChange = this.handleChange.bind(this);
@@ -239,7 +378,6 @@ componentDidMount() {
     this.draftChange = this.draftChange.bind(this);
     this.onUpdateLabel = this.onUpdateLabel.bind(this);
     this.updateRound = this.updateRound.bind(this);
-    this.createRoom = this.createRoom.bind(this);
     this.changeRoomID = this.changeRoomID.bind(this);
     this.joinRoom = this.joinRoom.bind(this);
   }
@@ -251,13 +389,6 @@ componentDidMount() {
 
   changeRoomID(event){
   	this.setState({proposedRoomID: event.target.value});
-  }
-
-  createRoom(){	
-  	this.setState({roomCreated: true});
-  	var url = "room/asf";
-  	socket.emit('room creation', url);
-  	this.setState({roomURL: url});
   }
 
   onUpdateLabel(data){
@@ -624,7 +755,7 @@ componentDidMount() {
     	  {this.state.roomCreated ?
     	  		<div>
 		    	  <h2 className="text-center">
-		    	  	Room {this.state.roomID}
+		    	  	Room "{this.state.roomID}"
 		    	  </h2>
 			      <div className="text-center">
 
@@ -990,8 +1121,7 @@ componentDidMount() {
 				    : null}
 			    </div>	
 		   : 
-		   <div>
-			   <a onClick={this.createRoom}>Create Room</a>
+		   <div className="text-center">
 				 <div onChange={this.changeRoomID}>
 					<TextInput text="Enter Room ID: " type="text"/>
 				 </div>
