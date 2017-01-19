@@ -254,14 +254,14 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
 		  			if(pokemonArray[pokemon].forme.toLowerCase().includes('mega')){
               if(allTypes){
                 if(finalForm == 'true' && pokemonArray[pokemon].evos == undefined){
-  		  				  if(!FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
+  		  				  if(FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
                     pokemonArrayCopy.push(pokemonArray[pokemon]);
                   }
                 }
               } else {  
               if(TypeCheck(selectedTypes, pokemonArray[pokemon].types)){
                 if(finalForm == 'true' && pokemonArray[pokemon].evos == undefined){
-                  if(!FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
+                  if(FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
                     pokemonArrayCopy.push(pokemonArray[pokemon]); 
                   }
                 }
@@ -277,7 +277,7 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
             } else {
               if(TypeCheck(selectedTypes, pokemonArray[pokemon].types)){
                 if(finalForm == 'true' && pokemonArray[pokemon].evos == undefined){
-                  if(!FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
+                  if(FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
                     pokemonArrayCopy.push(pokemonArray[pokemon]); 
                   }
                 }
@@ -294,7 +294,7 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
   			}
         else{
           if(finalForm == 'true' && pokemonArray[pokemon].evos == undefined){
-            if(!FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
+            if(FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
               pokemonArrayCopy.push(pokemonArray[pokemon]); 
             }
           }
@@ -307,18 +307,14 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
   		if(pokemonArray[pokemon].forme != undefined){
   			if(pokemonArray[pokemon].forme.toLowerCase().includes('mega')){
           if(allTypes){
-            if(finalForm == 'true' && pokemonArray[pokemon].evos == undefined){
-              if(!FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
+              if(FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
                 pokemonArrayCopy.push(pokemonArray[pokemon]);  
               }
-            }
           } else { 
             if(TypeCheck(selectedTypes, pokemonArray[pokemon].types)){
-              if(finalForm == 'true' && pokemonArray[pokemon].evos == undefined){
-                if(!FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
+                if(FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
                   pokemonArrayCopy.push(pokemonArray[pokemon]); 
                 }
-              }
             }
           }
   			}
@@ -333,7 +329,7 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
         } else {
           if(TypeCheck(selectedTypes, pokemonArray[pokemon].types)){
             if(finalForm == 'true' && pokemonArray[pokemon].evos == undefined){
-              if(!FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
+              if(FitsInGenBounds(pokemonArray[pokemon].num, genBounds)){
                 pokemonArrayCopy.push(pokemonArray[pokemon]); 
               }
             }
