@@ -345,6 +345,10 @@ componentDidMount() {
 		console.log(readyArr);
 		this.setState({allReady: tempAllReady});
 	});
+
+	socket.on('exisiting rooms', (roomsAndNumbers) => {
+		this.setState({activeRooms: roomsAndNumbers});
+	});
 }
 
   constructor(props) {
@@ -392,7 +396,8 @@ componentDidMount() {
 			   	  roomID: "",
 			   	  numberOfTeamsArray: [0],
 			   	  playersReady: [],
-			   	  allReady: false}; 
+			   	  allReady: false,
+			   	  activeRooms: []}; 
     this.handleChange = this.handleChange.bind(this);
     this.getResults = this.getResults.bind(this);
     this.handleTeamChange = this.handleTeamChange.bind(this);
@@ -413,6 +418,7 @@ componentDidMount() {
     this.changeRoomID = this.changeRoomID.bind(this);
     this.joinRoom = this.joinRoom.bind(this);
     this.changePlayerReadyStatus = this.changePlayerReadyStatus.bind(this);
+    this.joinSpecificRoom = this.joinSpecificRoom.bind(this);
   }
 
   changePlayerReadyStatus(){
@@ -420,6 +426,11 @@ componentDidMount() {
   	tempPlayersReady[this.state.clientNumber] = !this.state.playersReady[this.state.clientNumber];
   	this.setState({playersReady: tempPlayersReady});
   	socket.emit('ready status changed', tempPlayersReady);
+  }
+
+  joinSpecificRoom(room){
+  	this.setState({roomCreated: true});
+  	socket.emit('join room', {roomID: room});
   }
 
   joinRoom(){
@@ -665,7 +676,6 @@ componentDidMount() {
   }
 
   finalFormChange(event) {
-  	console.log("gd");
   	var s = !this.state.finalFormOnly;
   	this.setState({finalFormOnly: s});
   	socket.emit('finalFormChange', s);
@@ -815,6 +825,17 @@ componentDidMount() {
 						
 						  <br></br>
 
+
+					      <div onClick={this.finalFormChange}>
+					      	<Input name="Final Forms Only" value={this.state.finalFormOnly}/>
+					      </div>
+
+					      <div onClick={this.megasChange}>
+					      	<Input name="Megas Only" value={this.state.megasOnly}/>
+					      </div>	
+
+					      <br></br>
+
 					      <div>
 						    <ButtonToolbar>
 						      <Button className="textCenter" bsSize="large" onClick={this.toggleTypes}>
@@ -894,7 +915,21 @@ componentDidMount() {
 							      		</Button>
 									    </ButtonGroup>
 									</ButtonToolbar>
-							: null}		 
+							: null}	
+
+							<br></br>
+						    <DropdownButton bsSize="large" title={this.state.tier} id="dropdown-size-large"  onSelect={this.tierChange}>
+						        <MenuItem eventKey="OU">OU</MenuItem>
+						        <MenuItem eventKey="UU">UU</MenuItem>
+						        <MenuItem eventKey="RU">RU</MenuItem>
+						        <MenuItem eventKey="NU">NU</MenuItem>
+						        <MenuItem eventKey="PU">PU</MenuItem>
+						        <MenuItem eventKey="LC">LC</MenuItem>
+						        <MenuItem eventKey="Uber">Uber</MenuItem>
+						        <MenuItem divider/>
+						        <MenuItem eventKey="Tiers">None</MenuItem>
+					        </DropdownButton>
+
 
 					      <div>
 					      	<h3>Select Generation(s): </h3>
@@ -922,31 +957,8 @@ componentDidMount() {
 					      	<TextInput text="Minimum Cumulative Base Stats: " type="number"/>
 					      </div>
 
+					      
 					      <br></br>
-
-					      <div onClick={this.finalFormChange}>
-					      	<Input name="Final Forms Only" value={this.state.finalFormOnly}/>
-					      </div>
-
-					      <div onClick={this.megasChange}>
-					      	<Input name="Megas Only" value={this.state.megasOnly}/>
-					      </div>	
-
-					      <div>
-						    <ButtonToolbar className="textCenter1">
-						      <DropdownButton bsSize="large" title={this.state.tier} id="dropdown-size-large"  onSelect={this.tierChange}>
-							      <MenuItem eventKey="OU">OU</MenuItem>
-							      <MenuItem eventKey="UU">UU</MenuItem>
-							      <MenuItem eventKey="RU">RU</MenuItem>
-							      <MenuItem eventKey="NU">NU</MenuItem>
-							      <MenuItem eventKey="PU">PU</MenuItem>
-							      <MenuItem eventKey="LC">LC</MenuItem>
-							      <MenuItem eventKey="Uber">Uber</MenuItem>
-							      <MenuItem divider/>
-							      <MenuItem eventKey="Tiers">None</MenuItem>
-						      </DropdownButton>
-						    </ButtonToolbar>
-					      </div>	      
 
 					      {!this.state.draftOver && !this.state.show ?
 					      	this.state.allReady?
@@ -1206,6 +1218,35 @@ componentDidMount() {
 					<TextInput text="Enter Room ID: " type="text"/>
 				 </div>
 				 <Button onClick={this.joinRoom}>Join Room</Button>
+
+				 <br></br>
+				 <br></br>
+				 <div>
+				 	<b>Note: Each room is deleted when there is no one left in that room</b>
+				 </div>
+				 <br></br>
+				 <br></br>
+
+				 <div className="container">
+
+					 {this.state.activeRooms.length > 0 ?
+					 	<div>
+							 <h2>Active Rooms</h2>
+
+							 {this.state.activeRooms.map((room, key) => {
+							 	return(
+							 		<div className="col-md-4">
+							 			<h3>Room {room.name}</h3>
+							 			<div>{room.numberOfPlayers} Players</div>
+							 			<Button onClick={event => this.joinSpecificRoom(room.name)}>Join <span className="glyphicon glyphicon-menu-right text-right small" aria-hidden="true"></span></Button>
+							 		</div>
+							 	);
+							 })}
+						</div>
+						 : null}
+
+				</div>
+
 			</div>
 			 }
 	    </div>

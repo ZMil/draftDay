@@ -74,8 +74,15 @@ Object.values = obj => Object.keys(obj).map(key => obj[key]);
 
 io.on('connection', function(socket){
 
+  var roomsAndNumbers = [];
+  for(var j = 0; j < rooms.length; j++){
+    roomsAndNumbers.push({name: rooms[j], numberOfPlayers: Object.keys(roomPlayerDictionary[rooms[j]]).length});
+  }
+
+  io.to(socket.id).emit('exisiting rooms', roomsAndNumbers);
+
   socket.on('selection made', function(selection){
-    console.log(selection);
+    // console.log(selection);
     io.to(roomLookUp[socket.id]).emit('broadcast pick', selection);
     if(updatesPerRoom[roomLookUp[socket.id]]['selections'] != undefined){
       updatesPerRoom[roomLookUp[socket.id]]['selections'].push(selection);
@@ -157,6 +164,13 @@ io.on('connection', function(socket){
     io.to(roomLookUp[socket.id]).emit('teamNumberChange', Object.keys(roomPlayerDictionary[roomID.roomID]).length);  
 
     io.to(socket.id).emit('update preferences', updatesPerRoom[roomLookUp[socket.id]]);
+
+    var roomsAndNumbers = [];
+    for(var j = 0; j < rooms.length; j++){
+      roomsAndNumbers.push({name: rooms[j], numberOfPlayers: Object.keys(roomPlayerDictionary[rooms[j]]).length});
+    }
+
+    io.emit('exisiting rooms', roomsAndNumbers);
    });
 
   socket.on('ready status changed', function(readyArr){
@@ -191,11 +205,18 @@ io.on('connection', function(socket){
             var index = openNumbersForRooms[rID].indexOf(0);
             openNumbersForRooms[rID].splice(index, 1);
             openNumbersForRooms[rID].push(oldNumber);
-            console.log(openNumbersForRooms[rID]);
             break;
           }
 
           io.to(player).emit('player number', roomPlayerDictionary[rID][newLeaderID]);
+        }
+
+        if(Object.keys(roomPlayerDictionary[rID]).length == 0){
+          //delete room
+            delete roomPlayerDictionary[rID];
+            var index = rooms.indexOf(rID);
+            rooms.splice(index, 1);
+            delete updatesPerRoom[rID];
         }
       }
     }
