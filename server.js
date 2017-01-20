@@ -159,6 +159,10 @@ io.on('connection', function(socket){
     io.to(socket.id).emit('update preferences', updatesPerRoom[roomLookUp[socket.id]]);
    });
 
+  socket.on('ready status changed', function(readyArr){
+    io.to(roomLookUp[socket.id]).emit('global ready status change', readyArr);
+    updatesPerRoom[roomLookUp[socket.id]]['ready status'] = readyArr;
+  });
 
   socket.on('disconnect', function(){
     if(roomPlayerDictionary[roomLookUp[socket.id]] != undefined){

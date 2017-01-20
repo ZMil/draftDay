@@ -21,13 +21,11 @@ class App extends React.Component {
 componentDidMount() {
 
     socket.on('broadcast pick', (selection) => {
-    	console.log(selection);
     	if(this.state.teamResults.length - 1 < selection.team){
     		this.state.teamResults.push([selection.pokemon]);
     	} else {
     		this.state.teamResults[selection.team].push(selection.pokemon);
     	}
-    	console.log(this.state.showResults);
     	//make pokemon disappear
     	this.state.showResults[selection.pokemonNum] = false;
     	var results = this.state.showResults;
@@ -60,6 +58,8 @@ componentDidMount() {
     		arr.push(i);
     	}
     	this.setState({numberOfTeamsArray: arr});
+    	this.state.playersReady.push(false);
+		this.setState({allReady: false});
     });
 
     socket.on('player number', (number) => {
@@ -318,9 +318,33 @@ componentDidMount() {
 				    	this.updateRound();
     				}
     				break;
+    			case 'ready status':
+    				this.setState({playersReady: updates[key]});
+					var tempAllReady = true;
+					for(var player in readyArr){
+						if(!readyArr[player]){
+							tempAllReady = false;
+							break;
+						}
+					}
+					this.setState({allReady: tempAllReady});
+    				break;	
     		}
     	}
     });
+
+	socket.on('global ready status change', (readyArr) => {
+		this.setState({playersReady: readyArr});
+		var tempAllReady = true;
+		for(var player in readyArr){
+			if(!readyArr[player]){
+				tempAllReady = false;
+				break;
+			}
+		}
+		console.log(readyArr);
+		this.setState({allReady: tempAllReady});
+	});
 }
 
   constructor(props) {
@@ -366,7 +390,9 @@ componentDidMount() {
 			   	  roomCreated: false,
 			   	  proposedRoomID: "",
 			   	  roomID: "",
-			   	  numberOfTeamsArray: [0]}; 
+			   	  numberOfTeamsArray: [0],
+			   	  playersReady: [],
+			   	  allReady: false}; 
     this.handleChange = this.handleChange.bind(this);
     this.getResults = this.getResults.bind(this);
     this.handleTeamChange = this.handleTeamChange.bind(this);
@@ -386,6 +412,14 @@ componentDidMount() {
     this.updateRound = this.updateRound.bind(this);
     this.changeRoomID = this.changeRoomID.bind(this);
     this.joinRoom = this.joinRoom.bind(this);
+    this.changePlayerReadyStatus = this.changePlayerReadyStatus.bind(this);
+  }
+
+  changePlayerReadyStatus(){
+  	var tempPlayersReady = this.state.playersReady;
+  	tempPlayersReady[this.state.clientNumber] = !this.state.playersReady[this.state.clientNumber];
+  	this.setState({playersReady: tempPlayersReady});
+  	socket.emit('ready status changed', tempPlayersReady);
   }
 
   joinRoom(){
@@ -631,6 +665,7 @@ componentDidMount() {
   }
 
   finalFormChange(event) {
+  	console.log("gd");
   	var s = !this.state.finalFormOnly;
   	this.setState({finalFormOnly: s});
   	socket.emit('finalFormChange', s);
@@ -914,7 +949,11 @@ componentDidMount() {
 					      </div>	      
 
 					      {!this.state.draftOver && !this.state.show ?
-					      	<Button bsStyle="primary" onClick={this.getResults}>GO</Button>
+					      	this.state.allReady?
+					      		<Button bsStyle="primary" onClick={this.getResults}>GO</Button>
+					      		:
+					      		<Button bsStyle="primary" onClick={this.getResults} disabled>GO</Button>
+					      	
 					      : null}
 
 					      {this.state.show || this.state.draftOver? 
@@ -1015,13 +1054,38 @@ componentDidMount() {
 
 					: null}
 					<br></br>
-					<div>
+					
 						{this.state.numberOfTeamsArray.map((a, key) => {
 							return(
-								<ReadyButton key={key} player={key+1}/>
+								<div>
+								{this.state.clientNumber == key ?
+									<span onClick={this.changePlayerReadyStatus}>
+										<ReadyButton key={key} player={key+1} clientNumber={this.state.clientNumber}/>
+									</span>
+
+									:
+
+									<span>
+										Player {key+1}: &nbsp;
+										{this.state.playersReady[key] ?
+											<span className="text-success">
+												<b>Ready!</b>
+											</span>
+											:
+											<span className="text-danger">
+												<b>Not Ready</b>
+											</span>
+										}
+									</span>
+								}
+								</div>
 							);
 						})}	
-					</div>
+						
+						<br></br>
+						<div>
+							<b>The draft host cannot start the draft until everyone has readied up.</b>
+						</div>
 
 				
 				      {this.state.show ? null : 
@@ -1250,17 +1314,24 @@ class Pokemon extends React.Component {
 
 class ReadyButton extends React.Component {
 	componentDidMount(){
-  		$('.toggleOffInput').bootstrapToggle('off');
+  		$('.toggleInputReadyButton').bootstrapToggle('off');
 	}
 	componentDidUpdate(){
-	    $('.toggleOffInput').bootstrapToggle();
+	    $('.toggleInputReadyButton').bootstrapToggle();
 	}
 
 	render(){
 		return (
-			<span>
-				<input className="toggleInput" type="checkbox" data-toggle="toggle" data-on={'Player '+this.props.player+' Ready'} data-off={'Player '+this.props.player+' Not Ready'} data-onstyle="success" data-offstyle="danger"/>
-			</span>
+			<div>
+				<input 
+					className="toggleInputReadyButton readyUpButtons" 
+					type="checkbox" 
+					data-toggle="toggle" 
+					data-on={'Ready!'} 
+					data-off={'Not Ready'} 
+					data-onstyle="success" 
+					data-offstyle="danger"/>
+			</div>
 		);
 	}
 }
