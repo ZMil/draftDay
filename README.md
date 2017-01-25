@@ -2,6 +2,8 @@
 
 A fantasy draft-esque client for Pokemon Showdown.
 
+Developed for groups of two or more.
+
 ## How To
 
 - User creates or joins room
