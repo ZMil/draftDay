@@ -21,7 +21,7 @@ app.use(express.static(__dirname + '/public'));
 	// console.log('Server listening on ' + port);
 // });
 console.log('Server listening on ' + port);
-server.listen(port);
+server.listen(port, "0.0.0.0");
 
 var gen1 = [1, 151];
 var gen2 = [152, 251];
@@ -153,7 +153,7 @@ io.on('connection', function(socket){
       else{
         roomPlayerDictionary[roomID.roomID][socket.id] = Object.keys(roomPlayerDictionary[roomID.roomID]).length;
       }
-      console.log("socket "+socket.id+" has joined room "+roomID.roomID+" as Player "+roomPlayerDictionary[roomID.roomID][socket.id]);
+      console.log("socket "+socket.id+" has joined room '"+roomID.roomID+"' as Player "+roomPlayerDictionary[roomID.roomID][socket.id]);
     } else {
       //should never happen, I think? 
       console.log(socket.id+"has RECONNECTED as Player "+roomPlayerDictionary[roomID.roomID][socket.id]);
