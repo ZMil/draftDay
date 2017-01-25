@@ -21,7 +21,7 @@ app.use(express.static(__dirname + '/public'));
 	// console.log('Server listening on ' + port);
 // });
 console.log('Server listening on ' + port);
-server.listen(port, "0.0.0.0");
+server.listen(port);
 
 var gen1 = [1, 151];
 var gen2 = [152, 251];
