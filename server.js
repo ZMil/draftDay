@@ -3,7 +3,7 @@ var http = require('http');
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
+var io = require('socket.io').listen(server);
 // app.use(router);
 var ejs = require('ejs');
 
@@ -23,8 +23,9 @@ app.use(express.static(__dirname + '/public'));
 // app.listen(port, ip, function() {
 	// console.log('Server listening on ' + port);
 // });
-console.log('Server listening on ' + port);
-server.listen(port);
+// console.log('Server listening on ' + PORT);
+// server.listen(port);
+server.listen(process.env.OPENSHIFT_NODEJS_PORT, process.env.OPENSHIFT_NODEJS_IP);
 
 var gen1 = [1, 151];
 var gen2 = [152, 251];
