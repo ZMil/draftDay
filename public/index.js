@@ -14,7 +14,8 @@
 
 // var Router = require('react-router');
 
-var socket = io();
+// var socket = io();
+var socket = io.connect('http://draftday-zmil.rhcloud.com:8000/', {'forceNew':true });
 
 class App extends React.Component {
 
