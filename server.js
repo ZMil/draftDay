@@ -9,9 +9,12 @@ var ejs = require('ejs');
 
 
 //some variables
-var port = process.env.PORT || process.env.port || process.env.OPENSHIFT_NODEJS_PORT || 9999;
-var ip = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+// var port = process.env.PORT || process.env.port || process.env.OPENSHIFT_NODEJS_PORT || 9999;
+// var ip = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 var nodeEnv = process.env.NODE_ENV || 'unknown';
+
+var PORT = process.env.OPENSHIFT_NODEJS_PORT ||process.env.PORT || 8080;
+var IP = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || '0.0.0.0';
 
 //set up the static directory
 app.use(express.static(__dirname + '/public'));
