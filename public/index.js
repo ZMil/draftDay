@@ -803,7 +803,8 @@ componentDidMount() {
 
   render() {
     return ( 
-    	<div>
+    	<div className="jumbotron">
+  			<h1 className="text-center">draftDay</h1>
     	  {this.state.roomCreated ?
     	  		<div>
 		    	  <h2 className="text-center">
