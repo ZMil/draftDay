@@ -16,7 +16,7 @@ var nodeEnv = process.env.NODE_ENV || 'unknown';
 //set up the static directory
 app.use(express.static(__dirname + '/public'));
 
-//start up server
+//start up servers
 // app.listen(port, ip, function() {
 	// console.log('Server listening on ' + port);
 // });

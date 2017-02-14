@@ -1,19 +1,3 @@
-// var React = require('react');
-// var ReactBootstrap = require('react-bootstrap');
-
-// var Button = ReactBootstrap.Button;
-// var Navbar = ReactBootstrap.Navbar;
-// var Tooltip = ReactBootstrap.Tooltip;
-// var ButtonToolbar = ReactBootstrap.ButtonToolbar;
-// var DropdownButton = ReactBootstrap.DropdownButton;
-// var MenuItem = ReactBootstrap.MenuItem;
-// var ButtonGroup = ReactBootstrap.ButtonGroup;
-// var Grid = ReactBootstrap.Grid;
-// var Row = ReactBootstrap.Row;
-// var Col = ReactBootstrap.Col;
-
-// var Router = require('react-router');
-
 var socket = io();
 
 class App extends React.Component {
@@ -802,7 +786,9 @@ componentDidMount() {
 
   render() {
     return ( 
-    	<div>
+    	<div className='jumbotron'>
+  			<h1 className='text-center'>draftDay</h1>
+
     	  {this.state.roomCreated ?
     	  		<div>
 		    	  <h2 className="text-center">
