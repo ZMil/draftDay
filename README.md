@@ -4,7 +4,19 @@ A fantasy draft-esque client for Pokemon Showdown.
 
 Developed for groups of two or more.
 
-## How To
+## How To Run
+
+Because past Zach apparently thought it was so straight forward to figure out and never made any directions.
+
+- First time:
+ - `yarn` from root
+ - `npm install -g bower` if bower is not installed
+ - `bower install` from `/public`
+
+- `node server.js` from root
+- navigate to `localhost:9999` in browser and get draftin'
+
+## How To Play
 
 - User creates or joins room
 

@@ -601,44 +601,47 @@ componentDidMount() {
 
   updateRound(){
   	if(this.state.linearDraft){
-	  		{this.state.lastPlayer = this.state.currentPlayer}
-			this.setState({lastPlayer: this.state.lastPlayer});
-		  	{this.state.currentPlayer += 1}  
-			if(this.state.currentPlayer > this.state.numberOfTeams){
-				{this.state.currentPlayer = 1}
+		{this.state.lastPlayer = this.state.currentPlayer}
+		this.setState({lastPlayer: this.state.lastPlayer});
+		{this.state.currentPlayer += 1}  
+		this.setState({currentPlayer: this.state.currentPlayer});
+		if(this.state.currentPlayer > this.state.numberOfTeams){
+			{this.state.currentPlayer = 1}
+			this.setState({currentPlayer: 1});
+			{this.state.round += 1}
+			this.setState({round: this.state.round});
+		}
+		{this.state.nextPlayer = this.state.currentPlayer === this.state.numberOfTeams ? 1 : this.state.currentPlayer+1}
+		// this.setState({currentPlayer: this.state.currentPlayer});
+		this.setState({nextPlayer: this.state.nextPlayer})
+	} else{
+		//is snake draft
+		{this.state.lastPlayer = this.state.currentPlayer}
+		this.setState({lastPlayer: this.state.lastPlayer});
+		if(this.state.currentPlayer == this.state.numberOfTeams || (this.state.currentPlayer == 1 && this.state.round > 1)) {
+			if(this.state.turnOfEdgePlayer > 0){
+				var reverse = -(this.state.directionOfSnakeDraft);
+				var nextPlayer = this.state.currentPlayer + reverse;
+				var nextNextPlayer = this.state.numberOfTeams > 2 ? this.state.currentPlayer + (2*reverse) : this.state.currentPlayer + reverse;
+				this.setState({turnOfEdgePlayer: 0, directionOfSnakeDraft: reverse, currentPlayer: nextPlayer, nextPlayer: nextNextPlayer});
+			} else{
+				this.setState({turnOfEdgePlayer: 1}); 
+				var nextPlayer = this.state.currentPlayer + -(this.state.directionOfSnakeDraft);
+				this.setState({nextPlayer: nextPlayer});
 				{this.state.round += 1}
 				this.setState({round: this.state.round});
 			}
-			{this.state.nextPlayer = this.state.currentPlayer == this.state.numberOfTeams ? 1 : this.state.currentPlayer+1}
-			this.setState({nextPlayer: this.state.nextPlayer})
 		} else{
-			//is snake draft
-			{this.state.lastPlayer = this.state.currentPlayer}
-			this.setState({lastPlayer: this.state.lastPlayer});
-			if(this.state.currentPlayer == this.state.numberOfTeams || (this.state.currentPlayer == 1 && this.state.round > 1)) {
-				if(this.state.turnOfEdgePlayer > 0){
-					var reverse = -(this.state.directionOfSnakeDraft);
-					var nextPlayer = this.state.currentPlayer + reverse;
-					var nextNextPlayer = this.state.numberOfTeams > 2 ? this.state.currentPlayer + (2*reverse) : this.state.currentPlayer + reverse;
-					this.setState({turnOfEdgePlayer: 0, directionOfSnakeDraft: reverse, currentPlayer: nextPlayer, nextPlayer: nextNextPlayer});
-				} else{
-					this.setState({turnOfEdgePlayer: 1}); 
-					var nextPlayer = this.state.currentPlayer + -(this.state.directionOfSnakeDraft);
-					this.setState({nextPlayer: nextPlayer});
-					{this.state.round += 1}
-					this.setState({round: this.state.round});
-				}
-			} else{
-				var nextPlayer = this.state.currentPlayer + this.state.directionOfSnakeDraft;
-				this.setState({currentPlayer: nextPlayer});
-				if(nextPlayer == this.state.numberOfTeams || nextPlayer == 1 ){
+			var nextPlayer = this.state.currentPlayer + this.state.directionOfSnakeDraft;
+			this.setState({currentPlayer: nextPlayer});
+			if(nextPlayer == this.state.numberOfTeams || nextPlayer == 1 ){
 
-				} else{
-					nextPlayer += this.state.directionOfSnakeDraft;
-					this.setState({nextPlayer: nextPlayer});
-				}
+			} else{
+				nextPlayer += this.state.directionOfSnakeDraft;
+				this.setState({nextPlayer: nextPlayer});
 			}
 		}
+	}
 
 	this.setState({ready: true});
   	var moreThanOnePokemonLeft = false;
