@@ -44,3 +44,10 @@ selected)
 ## Known Bugs
 
 - Linear draft doesn't seem to be working right now
+
+- Start over doesn't clear drafted players for other users besides host
+
+- Something weird with the host being set if user opens webpage first, instead of user creating room
+    - hmmm not exactly apparently, but something weird is happening here
+    - something with assigning player numbers
+    - could be joining a room for the second time
