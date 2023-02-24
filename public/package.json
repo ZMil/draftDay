@@ -1,0 +1,27 @@
+{
+  "name": "draftDay",
+  "main": "index.js",
+  "homepage": "https://github.com/ZMil/draftDay",
+  "authors": [
+    "Zachary Milrod <zmilrod@gmail.com>"
+  ],
+  "description": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-toggle": "^2.2.2",
+    "bootstrap": "^3.3.7",
+    "ajax": "^2.1.2",
+    "babel": "^5.8.38",
+    "fetch": "^1.0.0",
+    "react": "^15.3.2",
+    "react-bootstrap": "^0.30.5"
+  }
+}

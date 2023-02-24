@@ -1089,20 +1089,20 @@ componentDidMount() {
 						</div>
 
 				
-				      {this.state.show ? null : 
+				      {!this.state.show && 
 					      <Navbar inverse className="navbar-dark text-primary text-center navbar-fixed-top">
 					     	 <b>YOU ARE PLAYER {this.state.clientNumber+1}</b>
-					     	 {this.state.clientNumber == 0 ?
+					     	 {this.state.clientNumber == 0 &&
 					     	 	<div className="text-danger"><b>YOU ARE THE HOST <br></br>
 					     	 	YOU ARE RESPONSIBLE FOR SELECTING THE PREFERENCES AND STARTING THE DRAFT</b></div>
-					     	 	: null}
+							 }
 					      </Navbar>
 				  	  }
 
 				      { this.state.show ? 
 							<Navbar inverse className="navbar-dark navbar-fixed-bottom">
 								<ul className="nav nav-pills nav-justified">
-									<li className="col-md-4"> 
+									<li className="col-md-4 left-col-bottom-nav"> 
 									{ this.state.ready ? 
 											<span>
 											<br></br>
@@ -1115,14 +1115,14 @@ componentDidMount() {
 									</li>
 									
 									<li className="text-primary col-md-4 middleText" >
-										{this.state.currentPlayer == this.state.clientNumber+1 ? <h3 className="text-danger"><b>IT IS YOUR TURN</b></h3> : null}
+										{this.state.currentPlayer == this.state.clientNumber+1 ? <h3 className="text-danger kop"><b>IT IS YOUR TURN</b></h3> : <h3 className="kop"></h3>}
 										<div className="text-center headerMiddleText"><b>Player {this.state.currentPlayer}</b></div> 
 										<div className="text-center headerMiddleText"><b>PICK YOUR POKEMON</b></div>
 										<hr></hr>
 										<div className="text-center headerMiddleText roundText"><b>ROUND {this.state.round}</b></div>
 									</li>
 									
-									<li className="col-md-4">
+									<li className="col-md-4 right-col-bottom-nav">
 									{ this.state.ready ? 
 										<span>
 										<br></br>
@@ -1162,10 +1162,13 @@ componentDidMount() {
 					      {this.state.data.map((name, key) => {
 				            return (  	
 				            		<li>
-				            			{this.state.showResults[key] ? 
-				            				<span>
+				            			{this.state.showResults[key] && 
+				            				<div className="pokemonContainer">
 					            				<Pokemon name={name.name} image={name.image}></Pokemon>
-					            				<div>
+					            				<div className="nameAndButton">
+													<div className="pokemonName">
+														{name.name}
+													</div>
 					            					{this.state.currentPlayer == this.state.clientNumber + 1 ?
 						            					<Button 
 						            						bsStyle="primary" 
@@ -1180,8 +1183,7 @@ componentDidMount() {
 						            					</Button> 
 					            					}
 					            				</div>
-					            			</span>
-					            			: null }
+					            			</div>}
 					            	</li>
 				            );
 				          })}
@@ -1330,14 +1332,9 @@ class TextInput extends React.Component {
 class Pokemon extends React.Component {
 	render(){
 		return (
-			<span>
-	        	<div>
-	        		<img src={this.props.image}></img>
+	        	<div className="pokemonImgContainer">
+	        		<img src={this.props.image} className="pokeImage"></img>
 	        	</div>
-	        	<div className="pokemonName">
-	        		{this.props.name}
-	            </div>
-			</span>
 		);
 	}
 }
