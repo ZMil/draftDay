@@ -52,3 +52,5 @@ selected)
     - hmmm not exactly apparently, but something weird is happening here
     - something with assigning player numbers
     - could be joining a room for the second time
+
+- Ensure that all filters still work with update from updated pokemon list

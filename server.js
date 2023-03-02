@@ -56,6 +56,8 @@ var types =  ["Bird",
               "Dragon"];
 
 var pokemon = require('./data/pokemon.js');
+var pokemonTiers = require('./data/pokemon_tiers.js').FormatsData ;
+
 var battlePokedex = pokemon.BattlePokedex;
 
 var pokemonArray = {};
@@ -276,7 +278,15 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
   var pokemonArrayCopy = [];
   if(tier != "Tiers"){
   	for(pokemon in pokemonArray){
-  		if(pokemonArray[pokemon].tier == tier){
+      if  (pokemonArray[pokemon].baseSpecies)  {
+        var pokemonName =   pokemonArray[pokemon].baseSpecies.toLowerCase().replace(/\W/g, '');
+      }
+      else {
+        var pokemonName =   pokemonArray[pokemon].name.toLowerCase().replace(/\W/g, '');
+      }
+      
+      var pokemonTier = pokemonTiers[pokemonName].tier;
+  		if(pokemonTier == tier){
   			if(mega == "true"){
   				if(pokemonArray[pokemon].forme != undefined){
 		  			if(pokemonArray[pokemon].forme.toLowerCase().includes('mega')){
@@ -397,12 +407,31 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
 		    pokemans.push(currPoke);
 
         readablePokemonName = pokemans[j].name;
-        pokemonName = readablePokemonName.split(' ').join('-');
-        if (readablePokemonName.includes('-')) {
-          // do something better here
-          imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName.toLowerCase()+'.jpg'
+        pokemonName = readablePokemonName.split(' ').join('-').toLowerCase();
+        pokemonName = pokemonName.replace(/[^\w\-]/g, '');
+        if(readablePokemonName.includes('-')) {
+          
+          if(pokemonName.includes('alola')){
+            if(pokemonName.endsWith('alola')){
+              imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'n.jpg'  
+            } else if(pokemonName.endsWith('totem')){
+              pokemonNameSplit = pokemonName.split('-')
+              pokemonNameSplit.pop()
+              pokemonName =  pokemonNameSplit.join('-')
+              imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'n.jpg'  
+            }
+          }
+          else if(pokemonName.endsWith('galar'))  {
+            imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'ian.jpg'
+          } 
+          else if(pokemonName.endsWith('hisui')){
+            imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'an.jpg'
+          }
+          else{
+            imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'.jpg'
+          }
         } else {
-          imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName.toLowerCase()+'.jpg'
+          imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'.jpg'
         }
         pokemansNamesAndImages.push({name: readablePokemonName, image: imgUrl});
 	}

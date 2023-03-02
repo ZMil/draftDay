@@ -1185,12 +1185,13 @@ componentDidMount() {
 													</span>
 												);
 											})}
+										{this.state.show && this.state.draftOver && <Button onClick={navigator.clipboard.writeText(team.join('\n\n'))}>Click to copy/paste into teambuilder</Button>}	
 									</li>	
 								);
 							})}		      					
 						</ul>	
 			      </div>
-			     { this.state.show ? 
+			     { this.state.show  && !this.state.draftOver ? 
 			     	<div id="pokemon">
 			      		<ul>
 					      {this.state.data.map((name, key) => {
