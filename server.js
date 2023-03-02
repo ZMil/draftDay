@@ -427,6 +427,18 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
           else if(pokemonName.endsWith('hisui')){
             imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'an.jpg'
           }
+          else if (pokemonName.endsWith('-f')){
+            imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'emale.jpg'
+          }
+          else if (pokemonName.endsWith('-m')){
+            imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'ale.jpg'
+          }
+          else if (pokemonName.endsWith('gmax')){
+            pokemonNameSplit = pokemonName.split('-')
+            pokemonNameSplit.pop()
+            pokemonName =  pokemonNameSplit.join('-')
+            imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'-gigantamax.jpg'
+          }
           else{
             imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName+'.jpg'
           }
