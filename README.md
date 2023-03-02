@@ -28,7 +28,8 @@ Because past Zach apparently thought it was so straight forward to figure out an
 
 ## Future Improvements/Additions
 
-- Gen 7
+- Gen 7, Gen 8, Gen 9 = DONE
+    - Need to update pokemon.js to pokedex.js cause how did I not do that before
 
 - Automatic feedback (How many pokemon are possible with the selected parameters -> whether it's feasible with the amount of teams
 selected)

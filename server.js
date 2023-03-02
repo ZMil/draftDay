@@ -29,8 +29,11 @@ var gen3 = [252, 386];
 var gen4 = [387, 493];
 var gen5 = [494, 649];
 var gen6 = [650, 721];
+var gen7 = [722, 809];
+var gen8 = [810, 905];
+var gen9 = [906, 1008];
 
-var generationBounds = [gen1, gen2, gen3, gen4, gen5, gen6];
+var generationBounds = [gen1, gen2, gen3, gen4, gen5, gen6, gen7, gen8, gen9];
 
 var types =  ["Bird",
               "Normal",
@@ -392,8 +395,16 @@ app.get('/p/:numberOfTeams/:tier/:finalForm/:genStr/:baseStatMin/:mega/:typeStr'
   		  	currPoke = pokemonArrayCopy[parseInt(random)];
         }
 		    pokemans.push(currPoke);
-        species = pokemans[j].species;
-        pokemansNamesAndImages.push({name: species, image: 'https://img.pokemondb.net/artwork/'+species.toLowerCase()+'.jpg'});
+
+        readablePokemonName = pokemans[j].name;
+        pokemonName = readablePokemonName.split(' ').join('-');
+        if (readablePokemonName.includes('-')) {
+          // do something better here
+          imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName.toLowerCase()+'.jpg'
+        } else {
+          imgUrl = 'https://img.pokemondb.net/artwork/'+pokemonName.toLowerCase()+'.jpg'
+        }
+        pokemansNamesAndImages.push({name: readablePokemonName, image: imgUrl});
 	}
   res.send(pokemansNamesAndImages);
   io.emit('pokemon incoming', pokemansNamesAndImages);

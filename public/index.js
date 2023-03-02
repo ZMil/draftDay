@@ -155,7 +155,13 @@ componentDidMount() {
 	  			break;
 	  		case "gen7":
 	  			this.setState({gen7: genAndValue.value});
-	  			break;					
+	  			break;
+			case "gen8":
+				this.setState({gen8: genAndValue.value});
+				break;
+			case "gen9":
+				this.setState({gen9: genAndValue.value});
+				break;
 	  	}
     });	
 
@@ -276,7 +282,13 @@ componentDidMount() {
 					  			break;
 					  		case "gen7":
 					  			this.setState({gen7: updates[key][genUpdate].value});
-					  			break;					
+					  			break;	
+							case "gen8":
+								this.setState({gen8: updates[key][genUpdate].value});
+								break;	
+							case "gen9":
+								this.setState({gen9: updates[key][genUpdate].value});
+								break;	
 					  	}
 					}
     				break;
@@ -347,7 +359,9 @@ componentDidMount() {
     		      gen4:true, 
     		      gen5:true, 
     		      gen6:true,
-    		      gen7:true, 
+    		      gen7:true,
+				  gen8:true,
+				  gen9:true,
     		      baseStatMin: 0, megasOnly: false, showTypes: false,
     		  	  Bird: true,
 			   	  Normal: true,
@@ -704,7 +718,15 @@ componentDidMount() {
   		case "gen7":
   			s = !this.state.gen7;
   			this.setState({gen7: s});
-  			break;					
+  			break;		
+		case "gen8":
+			s = !this.state.gen8;
+			this.setState({gen8: s});
+			break;	
+		case "gen9":
+			s = !this.state.gen8;
+			this.setState({gen9: s});
+			break;	
   	}
   	socket.emit('generation change', {gen: event.gen, value: s});
   }
@@ -715,7 +737,10 @@ componentDidMount() {
   					this.state.gen3,
   					this.state.gen4,
   					this.state.gen5,
-  					this.state.gen6];
+  					this.state.gen6,
+					this.state.gen7,
+					this.state.gen8,
+					this.state.gen9];
   	// genArray.push(this.state.gen7);
   	var genStr = "";
   	for(var i = 0; i < genArray.length; i++){
@@ -939,6 +964,15 @@ componentDidMount() {
 					      	</span>
 					      	<span className="gen" onClick={(event)=>this.generationChange({gen: "gen6"}, event)}>	
 					      		<GenInput name="Gen 6" value="gen6"/>
+					      	</span>
+							<span className="gen" onClick={(event)=>this.generationChange({gen: "gen7"}, event)}>	
+					      		<GenInput name="Gen 7" value="gen7"/>
+					      	</span>
+							<span className="gen" onClick={(event)=>this.generationChange({gen: "gen8"}, event)}>	
+					      		<GenInput name="Gen 8" value="gen8"/>
+					      	</span>
+							<span className="gen" onClick={(event)=>this.generationChange({gen: "gen9"}, event)}>	
+					      		<GenInput name="Gen 9" value="gen9"/>
 					      	</span>
 					      </div>
 
