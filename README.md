@@ -16,6 +16,10 @@ Because past Zach apparently thought it was so straight forward to figure out an
 - `node server.js` from root
 - navigate to `localhost:9999` in browser and get draftin'
 
+## Dockerfile
+- `docker build . -t draftDay`
+- `docker run -p <host_port>:9999 -d draftDay`
+
 ## How To Play
 
 - User creates or joins room
@@ -34,7 +38,7 @@ Because past Zach apparently thought it was so straight forward to figure out an
 - Automatic feedback (How many pokemon are possible with the selected parameters -> whether it's feasible with the amount of teams
 selected)
 
-- 'Copy to clipboard' button for teams when draft is over.
+- 'Copy to clipboard' button for teams when draft is over. DONE
 
 - Option to generate pokemon with moves and items.
 
