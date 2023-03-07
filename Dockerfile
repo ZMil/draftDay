@@ -12,7 +12,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN bower install ./public
+RUN bower install ./public --config.directory=./public/bower_components
+RUN  ls ./public/
+RUN yarn --cwd ./public
 
 RUN yarn
 
